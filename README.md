@@ -31,6 +31,11 @@ Superficial touchL:
 - Parallel programming in R
 - _C++_ and _R_ glue: _Rcpp_ 
 
+## Course timing
+
+**Dates** Oct 2-4, 2023
+**Time** 13:00 -- 16:00
+
 
 
 
