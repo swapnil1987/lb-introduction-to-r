@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Swapnil Singh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introduction to R
+]
+.subtitle[
+## Lecture 1: Getting (slowly) Started
+]
+.author[
+### Swapnil Singh
+]
+.date[
+### Lietuvos Bankas | <a href="https://github.com/swapnil1987/lb-introduction-to-r">Course Link</a>
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.center-fit {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  max-height: 10%;
+}
+&lt;/style&gt;
+
+
+
+
+
+# Lecture's Objectives
+
+1. [Why this course?](#motivation)
+
+2. [Getting started](#started)
+
+3. [What R can do?](#r4ds)
+
+4. [Basic Introduction](#introduction)
+
+
+
+
+
+---
+class: inverse, center, middle
+name: motivation
+
+# Why this course?
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+# What is R?
+
+- R is a language and environment for statistical computing and graphics.
+- **Open-source** and extensible.
+- Built upon _S_, a statistical programming language.
+- Rich set of packages for data manipulation (e.g., `tidyverse` environment build upon `tidyr`, `dplyr`, etc.).
+- Comprehensive plotting libraries (e.g., `ggplot2`, `lattice`).
+- Wide array of statistical tests.
+- Facilitates machine learning algorithms.
+- Excellent packages (e.g., `sf`, `terra`, etc.) for spatial datasets and GIS applications
+
+---
+
+
+# Comparison with other languages
+
+
+## R vs Python
+
+- R: More focused on statistical modeling and data visualization.
+- R: Weaker on web-scraping
+- Python: More general-purpose but has strong data science libraries (e.g., `pandas`, `scikit-learn`).
+
+## R vs MATLAB
+
+- R: Open-source and has a larger community for data science.
+- MATLAB: Stronger in numerical simulation but less versatile for data manipulation.
+
+
+---
+
+#  R vs STATA
+
+## Flexibility and Extensibility
+
+- **R**: Highly extensible through packages; good for custom statistical methods.
+- **STATA**: More rigid but user-friendly for standard statistical tests.
+
+## Data Handling
+
+- **R**: More versatile data manipulation capabilities (`dplyr`, `tidyr`).
+- **STATA**: Efficient for large datasets but less flexibility.
+
+## Graphics and Visualization
+
+- **R**: Advanced graphical capabilities (`ggplot2`).
+- **STATA**: Basic graphs are easier to produce but less customizable.
+
+### Pricing and Community
+
+- **R**: Open-source, large and active community.
+- **STATA**: Commercial software, smaller community focused on social sciences.
+
+---
+
+
+# So, Why This Course?
+
+- Provide a basic introduction to R
+- In future, extend the course to advance level (_depending upon demand_)
+  - Causal inference methods
+  - Big data (`vroom`)
+  - Webscraping 
+  - Geospatial analysis
+  - ...
+--
+
+- Many of these topics are not directly relevant for your specific work, but,
+
+--
+
+&gt; &lt;span style="color: red;"&gt;**Knowledge is power!**&lt;/span&gt;
+
+
+
+
+---
+
+class: inverse, center, middle
+name: started
+
+# Getting Started
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+
+
+# What you need?
+
+## For this course:
+
+- Install `R`
+- Install `RStudio`
+
+## Additional components
+
+- Install `Git`
+- Create a `Github` account. Alternatively, you can also create account on `Gitlab` or `Gitbucket`, but `Github` is the most used one
+- If working only with `RStudio`, follow this website to get things working: [http://happygitwithr.com](http://happygitwithr.com)
+
+- For general purpose use of `Git`, I will suggest to use `GitKraken`
+
+
+
+
+---
+
+class: inverse, center, middle
+name: r4ds
+
+# What R Can Do?
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+# Let's create some figures!
+&lt;figure style="text-align: center;"&gt;
+&lt;img src="figures/nytimes-covid-spiral.jfif" style="width:70%; max-height:55vh; object-fit:contain; margin:auto; display:block;"&gt;
+ &lt;figcaption&gt;NY Times, 2022-01-06, Covid Cases Spiral, US &lt;/figcaption&gt;
+&lt;/figure&gt;
+
+---
+
+# Let's create some figures!
+## Hats off to ByData blog!
+
+
+```r
+pacman::p_load("tidyverse", "ggtext", "here", "lubridate")
+owid_url &lt;- "https://github.com/owid/covid-19-data/blob/master/public/data/owid-covid-data.csv?raw=true"
+covid &lt;- suppressMessages(read_csv(owid_url))
+
+# get the data only for the US
+covid_cases &lt;- covid |&gt; 
+  dplyr::filter(location == 'United States') |&gt; 
+  dplyr::select(date, new_cases, new_cases_smoothed) |&gt; 
+  dplyr::arrange(date) |&gt; 
+  
+  
+  
+  # add some additional data to complete the year
+  dplyr::add_row(date = as_date("2020-01-01"), new_cases = 0, new_cases_smoothed = 0,
+          .before = 1) %&gt;% 
+  tidyr::complete(date = seq(min(.$date), max(.$date), by = 1),
+           fill = list(new_cases = 0, new_cases_smoothed = 0)) %&gt;% 
+  dplyr::mutate(day_of_year = yday(date),
+         year = year(date)
+         )
+```
+
+
+---
+
+# How a basic plot looks like?
+
+
+```r
+basic.plot &lt;- covid_cases |&gt; 
+  ggplot() +
+  geom_segment(aes(x = day_of_year, xend = day_of_year + 1, 
+                   y = as.POSIXct(date), yend = as.POSIXct(date))) +
+  coord_polar()
+basic.plot
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-4-1.png" width="80%" height="80%" style="display: block; margin: auto;" /&gt;
+---
+
+# How a basic plot looks like?
+
+
+```r
+basic.plot + theme_void()
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-5-1.png" width="80%" height="80%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Moving onto advanced level now!
+
+
+```
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-6-1.png" width="80%" height="80%" style="display: block; margin: auto;" /&gt;
+---
+
+# Moving onto advanced level now!
+
+
+```r
+month_length &lt;- c(31, 28, 31, 30, 31, 30,
+                  31, 31, 30, 31, 30, 31)
+
+month_breaks &lt;- cumsum(month_length) - 30
+
+basic.plot &lt;-  basic.plot + scale_x_continuous(minor_breaks = month_breaks, 
+                     breaks = month_breaks[c(1, 4, 7, 10)],
+                     labels = c("Jan.", "April", "July", "Oct.")) +
+  theme(
+    plot.background = element_rect(color = NA, fill = "white"),
+    panel.grid.major.x = element_line(color = "grey70", size = 0.2, linetype = "dotted"),
+    panel.grid.minor.x = element_line(color = "grey70", size = 0.2, linetype = "dotted"),
+    axis.text.x = element_text(color = base_grey, size = 5, hjust = 0.5),
+  )
+```
+
+```
+## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
+## ℹ Please use the `linewidth` argument instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+---
+
+# Moving onto advanced level now!
+- One truth about generating good figures: last 10 percent improvement takes 90 percent of time
+
+```r
+month_length &lt;- c(31, 28, 31, 30, 31, 30,
+                  31, 31, 30, 31, 30, 31)
+
+month_breaks &lt;- cumsum(month_length) - 30
+
+basic.plot &lt;-   basic.plot + scale_x_continuous(minor_breaks = month_breaks, 
+                     breaks = month_breaks[c(1, 4, 7, 10)],
+                     labels = c("Jan.", "April", "July", "Oct.")) +
+  theme(
+    plot.background = element_rect(color = NA, fill = "white"),
+    panel.grid.major.x = element_line(color = "grey70", size = 0.2, linetype = "dotted"),
+    panel.grid.minor.x = element_line(color = "grey70", size = 0.2, linetype = "dotted"),
+    axis.text.x = element_text(color = base_grey, size = 5, hjust = 0.5),
+  )
+```
+
+
+
+---
+
+# Advanced level now
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-9-1.png" width="100%" height="80%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Minard's 1812 Plot
+- Hats off to Andrew Heiss
+- One lesson from this course: learn from best coders out there, rewrite and replicate their code
+&lt;figure style="text-align: center;"&gt;
+&lt;img src="figures/minard-plot.png" style="width:100%; height:200%; object-fit:contain; margin:auto; display:block;"&gt;
+ &lt;figcaption&gt;Forward and Retreat path of Napoleon's Army &lt;/figcaption&gt;
+&lt;/figure&gt;
+
+
+
+---
+
+
+--- 
+
+# Minard's 1812 Plot: Basic Work
+
+
+
+```r
+pacman::p_load(tidyverse,
+               lubridate,
+               ggmap,
+               ggrepel,
+               gridExtra,
+               pander)
+
+cities &lt;- read.table("data/cities.txt",
+                     header = TRUE, stringsAsFactors = FALSE)
+
+troops &lt;- read.table("data/troops.txt",
+                     header = TRUE, stringsAsFactors = FALSE)
+
+temps &lt;- read.table("data/temps.txt",
+                    header = TRUE, stringsAsFactors = FALSE) |&gt; 
+  mutate(date = dmy(date))  # Convert string to actual date
+```
+
+
+---
+
+# Minard's 1812 Plot: Basic Figure
+
+
+```r
+ggplot(troops, aes(x = long, y = lat, group = group)) +
+  geom_path()
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-11-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Minard's 1812 Plot: Basic Figure
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-12-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Minard's 1812 Plot: Bit more
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-13-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Minard's 1812 Plot: Bit more
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-14-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Minard's 1812 Plot: Bring Spatial Map
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-15-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Minard's 1812 Plot: Watercolor
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-16-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Minard's 1812 Plot: Overlay
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-17-1.png" width="100%" height="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Spatial Map: My Own Plot
+
+&lt;figure style="text-align: center;"&gt;
+&lt;img src="figures/atlanta_black_population_share.png" style="width:70%; max-height:55vh; object-fit:contain; margin:auto; display:block;"&gt;
+ &lt;figcaption&gt;Atlanta Black population share at the block level &lt;/figcaption&gt;
+&lt;/figure&gt;
+
+
+--- 
+
+
+class: inverse, center, middle
+name: introduction
+
+# Basic Introduction
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+
+
+
+
+
+
+# What is R?
+
+- R is a language and environment for statistical computing and graphics.
+- **Open-source** and extensible.
+- Built upon _S_, a statistical programming language.
+- Rich set of packages for data manipulation (e.g., `tidyverse` environment build upon `tidyr`, `dplyr`, etc.).
+- Comprehensive plotting libraries (e.g., `ggplot2`, `lattice`).
+- Wide array of statistical tests.
+- Facilitates machine learning algorithms.
+- Excellent packages (e.g., `sf`, `terra`, etc.) for spatial datasets and GIS applications
+
+---
+
+
+
+
+# General Guidelines
+
+* Use a different folder for each new project / assignment.
+* Set the Working Directory for R at the beginning of each project
+* Always use script files to keep a record of your work
+* Initialize a Git repository in each project folder (unless the project is very small).
+
+
+
+## My own example folder
+
+- `root/`
+  - _master.R_
+  - `auxfiles/`
+      - _auxfiles/script1.R_
+      - _auxfiles/script2.R_
+  - `Data/` (stores raw data, use _.gitignore_ to ignore the content of this folder to _Git_)
+      - _Data/rawdata1.dta_ 
+      - ...
+  - `Output/` (stores compiled, cleaned data, use _.gitignore_)
+      - _Output/tables/_  (stores estimation, descriptive tables)
+      - _Output/Figures/_  (stores figures, can  use _.gitignore_)
+  
+---
+
+# How `master.R` looks like?
+
+- This file sets up the environment where your code will run
+
+
+```r
+#clean up the memory
+rm(list=ls())
+gc()
+
+
+#set up the language of your error message
+Sys.setenv(lang='en')
+
+#most important: set up your working directory
+#all paths are relative to this
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
+
+---
+
+
+# How `master.R` looks like?
+
+
+```r
+#install pacman package, if not available always include this line, as your co-author 
+#might not have pacman
+if (!require(pacman)) {
+  install.packages('pacman', dependencies = T)
+}
+
+#load other packages you might need
+pacman::p_load(tidyverse,
+               hrbethemes,
+               fontawesome,
+               tidyverse,
+               ggtext,
+               lubridate,
+               here,
+               magick)
+```
+
+
+---
+
+# What is a package?
+
+- An R package is a collection of R functions, data, and documentation that can be installed and used by other R users.
+    - Packages are a way to organize and distribute code, data, and documentation
+    
+- General working with packages:
+    - `install.packages('tidyverse')`
+        - This command already finds a mirror to download the package
+    - `install.packages('tidyverse', repos='http://cran.us.r-project.org/', dependencies=TRUE)`
+        - You are specifying a specific mirror
+- I will suggest to use `pacman` (see the previous slide)
+
+--
+
+- Sometimes two different packages have a conflict:
+    - they contain functions with same name
+    - `R` will resolve it by selecting one function to _mask_ another
+    - If not careful, you can make error
+- If loading two packages which have a conflict, try to use `::`
+    
+
+
+---
+
+
+
+
+# Variables in _R_
+
+- R uses symbolic variables: words, letters, and their combination
+- These variables either _represent_ or _store_ values/objects
+- **How it works?** Use of _assignment operator_ (`&lt;-`) 
+
+
+```r
+n &lt;- 5
+n
+```
+
+[1] 5
+
+```r
+numVar &lt;- 10
+numVar
+```
+
+[1] 10
+
+
+---
+
+
+# Variables in _R_
+
+- R uses symbolic variables: words, letters, and their combination
+- These variables either _represent_ or _store_ values/objects
+- **How it works?** Use of _assignment operator_ (`&lt;-`) 
+    - Don't use `=` for assignment
+    - Most of the time it will work, but in `R` it is a bad practice
+
+
+```r
+stringVar &lt;- 'Hello World, I am R'
+stringVar 
+```
+
+[1] "Hello World, I am R"
+
+```r
+boolVar &lt;- TRUE
+boolVar
+```
+
+[1] TRUE
+
+```r
+newVar &lt;-  boolVar + 3
+newVar 
+```
+
+[1] 4
+
+---
+
+# Variable naming etiquette
+
+- We always work in a team
+- Your code will be read by someone else
+- Two rules for naming variables:
+    - Give _**meaningful**_ name to each variable
+    - Make sure the name is _**readable**_
+- Read this: [Google Style Guide for R Programming](https://google.github.io/styleguide/Rguide.html)
+
+---
+
+# Functions
+
+- We are not going to use `R` as a calculator
+    - You can, but it is an inefficient use of `R`
+    
+- You are in this course to **up** your `Data` and `Statistics` work
+
+- `R` allows you to do complicated things in an easy way
+
+- We need `functions` for that
+
+- _What is a function?_
+    - A set of routine, you write once, use indefinitely
+    - You can share this routine  with other people also
+        -  Think of `package`: just a bunch of functions, packaged  together, which can be used by anyone in the world
+        
+---
+
+# Functions
+
+- Generic representation of functions
+
+
+```r
+function_name &lt;- function(input1 , input2) {
+  
+  # Use `input1` and `input2` along with other functions and variable to
+  # do your work
+  
+  
+}  #end of function_name
+```
+
+---
+
+# Functions
+
+
+- **Example:**  
+    - `sum`, inbuilt function of `R`
+    - takes numbers and returns their total
+
+
+```r
+sum &lt;- function(number1, number2) {
+  
+  total &lt;- number1 + number2
+  return(total)
+  
+} #end function sum
+```
+
+
+- _Note:_ There is no default values for `number1` and `number2`
+
+
+
+```r
+sumDefault &lt;- function(number1=0, number2=1) {
+  
+  total &lt;- number1 + number2
+  return(total)
+  
+} #end function sumDefault
+```
+
+
+
+---
+
+#  Functions
+
+- How about writing a function where we can pass a vector?
+
+
+```r
+sumVector &lt;- function(vector_to_sum) {
+  
+  n &lt;- length(vector_to_sum)
+  
+  total &lt;- 0
+  
+  for(iter in 1:n){
+    total &lt;- total + vector_to_sum[iter]
+  }
+  
+  return(total)
+  
+  
+} #end function sumVector
+```
+
+---
+
+
+class: inverse, center, middle
+name: data_structures
+
+# R Data Structures
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+
+
+# Data _types_ and _structures_
+
+- `R` has six data types
+    - character
+    - numeric
+    - integer
+    - logical 
+    - complex
+    - _raw_ (rarely used)
+    
+- Combination of data types `\(\rightarrow\)` data structures
+
+- Data structures can be 
+    - atomic vectors: the vector hold data only of a single type
+    - non-atomic vectors i.e. `lists`: holds data of a multiple type
+        - `lists` are one of the most powerful feature of `R`
+
+---
+
+# Data _types_ and _structures_
+
+- Functions provided by `R` to examine what does a `vector` contains
+    - `class()`
+    - `typeof()`
+    - `length()`
+    - `attributes()`
+
+- **Example** 
+
+
+```r
+x &lt;- 'swapnil singh'
+
+class(x)
+```
+
+[1] "character"
+
+```r
+typeof(x)
+```
+
+[1] "character"
+
+
+---
+
+# Data _types_ and _structures_
+
+- Functions provided by `R` to examine what does a `vector` contains
+    - `class()`
+    - `typeof()`
+    - `length()`
+    - `attributes()`
+
+- **Example** 
+
+
+```r
+num &lt;- c(1,2,3,4,5,6)
+
+class(num)
+```
+
+[1] "numeric"
+
+```r
+typeof(num)
+```
+
+[1] "double"
+
+    
+  
+
+---
+
+# Data _types_ and _structures_
+
+- Functions provided by `R` to examine what does a `vector` contains
+    - `class()`
+    - `typeof()`
+    - `length()`
+    - `attributes()`
+
+- **Example** 
+
+
+```r
+num &lt;- c(1,2,3,4,5,6)
+
+
+length(num)
+```
+
+[1] 6
+
+```r
+attributes(num)
+```
+
+NULL
+
+---
+
+# Vectors
+
+- Two types of vectors:
+    - _**atomic vector:**_ contain element of same type
+    - _**lists:**_ the most important thing in _R_
+
+---
+
+# Atomic vector
+
+
+
+
+```r
+#default initialization of vector
+vector()
+```
+
+```
+## logical(0)
+```
+--
+
+
+```r
+#vector of type character
+vector('character', length = 3)   
+```
+
+```
+## [1] "" "" ""
+```
+
+--
+
+
+```r
+#use the character constructor, instead of vector
+character(3)
+```
+
+```
+## [1] "" "" ""
+```
+
+```r
+numeric(7)
+```
+
+```
+## [1] 0 0 0 0 0 0 0
+```
+
+```r
+logical(5)
+```
+
+```
+## [1] FALSE FALSE FALSE FALSE FALSE
+```
+
+
+---
+---
+
+# Atomic Vector 
+
+- Another way to create vector: use function `c`
+
+
+```r
+numericVec &lt;- c(0,1,3,4)
+numericVec
+```
+
+```
+## [1] 0 1 3 4
+```
+
+```r
+logicalVec &lt;- c(TRUE,FALSE,FALSE, TRUE)
+logicalVec
+```
+
+```
+## [1]  TRUE FALSE FALSE  TRUE
+```
+
+```r
+characterVec &lt;- c('Swapnil', "R Course", 'LB')
+characterVec
+```
+
+```
+## [1] "Swapnil"  "R Course" "LB"
+```
+
+```r
+# Add element to vector
+characterVec &lt;- c(characterVec, 'October')
+characterVec
+```
+
+```
+## [1] "Swapnil"  "R Course" "LB"       "October"
+```
+
+
+---
+
+# Atomic Vector - Missing Data
+
+- A vector can contain missing data, reported by `NA`
+- Does not matter the type of vector
+
+```r
+presidentName &lt;- c('Biden', 'Obama', NA, 'Bush')
+presidentName
+```
+
+```
+## [1] "Biden" "Obama" NA      "Bush"
+```
+
+```r
+#find the missing element
+pnameNA &lt;- is.na(presidentName)
+pnameNA
+```
+
+```
+## [1] FALSE FALSE  TRUE FALSE
+```
+
+```r
+whichNameNA &lt;- which(is.na(presidentName))
+whichNameNA
+```
+
+```
+## [1] 3
+```
+
+
+---
+
+# Lists
+
+
+```r
+#unnamed list
+unnamedList &lt;- list('my name is Swapnil Singh',
+                    35,
+                    'economist')
+
+unnamedList 
+```
+
+```
+## [[1]]
+## [1] "my name is Swapnil Singh"
+## 
+## [[2]]
+## [1] 35
+## 
+## [[3]]
+## [1] "economist"
+```
+
+- Access elements of list
+
+
+```r
+unnamedList[[1]][1]
+```
+
+```
+## [1] "my name is Swapnil Singh"
+```
+
+
+---
+
+
+
+# Lists
+
+
+```r
+#unnamed list
+unnamedList &lt;- list(c('my name is Swapnil Singh', 'I work at LB'),
+                    35,
+                    'economist')
+
+unnamedList 
+```
+
+```
+## [[1]]
+## [1] "my name is Swapnil Singh" "I work at LB"            
+## 
+## [[2]]
+## [1] 35
+## 
+## [[3]]
+## [1] "economist"
+```
+
+
+
+---
+
+# Lists
+
+
+```r
+#named list
+namedList &lt;- list(intro = 'my name is Swapnil Singh',
+                  age = 35,
+                  profession = 'economist')
+namedList
+```
+
+```
+## $intro
+## [1] "my name is Swapnil Singh"
+## 
+## $age
+## [1] 35
+## 
+## $profession
+## [1] "economist"
+```
+
+```r
+namedList$intro
+```
+
+```
+## [1] "my name is Swapnil Singh"
+```
+
+```r
+namedList[['age']]
+```
+
+```
+## [1] 35
+```
+
+
+---
+
+# Data Frame
+
+- Core of `data science` in `R`
+- It is actually a `list` where each element of list has same length
+- Let's take the previous example
+
+
+
+```r
+#unnamed list
+unnamedList &lt;- list(c('my name is Swapnil Singh', 'I work at LB'),
+                    35,
+                    'economist')
+#first element has different length than other two
+length(unnamedList[[1]]) 
+```
+
+```
+## [1] 2
+```
+
+```r
+length(unnamedList[[2]]) 
+```
+
+```
+## [1] 1
+```
+
+```r
+length(unnamedList[[3]]) 
+```
+
+```
+## [1] 1
+```
+
+
+---
+
+
+
+
+# Data Frame
+
+- Work with dataframe `CO2`
+
+
+
+```r
+#ugly output
+CO2
+```
+
+```
+##    Plant        Type  Treatment conc uptake
+## 1    Qn1      Quebec nonchilled   95   16.0
+## 2    Qn1      Quebec nonchilled  175   30.4
+## 3    Qn1      Quebec nonchilled  250   34.8
+## 4    Qn1      Quebec nonchilled  350   37.2
+## 5    Qn1      Quebec nonchilled  500   35.3
+## 6    Qn1      Quebec nonchilled  675   39.2
+## 7    Qn1      Quebec nonchilled 1000   39.7
+## 8    Qn2      Quebec nonchilled   95   13.6
+## 9    Qn2      Quebec nonchilled  175   27.3
+## 10   Qn2      Quebec nonchilled  250   37.1
+## 11   Qn2      Quebec nonchilled  350   41.8
+## 12   Qn2      Quebec nonchilled  500   40.6
+## 13   Qn2      Quebec nonchilled  675   41.4
+## 14   Qn2      Quebec nonchilled 1000   44.3
+## 15   Qn3      Quebec nonchilled   95   16.2
+## 16   Qn3      Quebec nonchilled  175   32.4
+## 17   Qn3      Quebec nonchilled  250   40.3
+## 18   Qn3      Quebec nonchilled  350   42.1
+## 19   Qn3      Quebec nonchilled  500   42.9
+## 20   Qn3      Quebec nonchilled  675   43.9
+## 21   Qn3      Quebec nonchilled 1000   45.5
+## 22   Qc1      Quebec    chilled   95   14.2
+## 23   Qc1      Quebec    chilled  175   24.1
+## 24   Qc1      Quebec    chilled  250   30.3
+## 25   Qc1      Quebec    chilled  350   34.6
+## 26   Qc1      Quebec    chilled  500   32.5
+## 27   Qc1      Quebec    chilled  675   35.4
+## 28   Qc1      Quebec    chilled 1000   38.7
+## 29   Qc2      Quebec    chilled   95    9.3
+## 30   Qc2      Quebec    chilled  175   27.3
+## 31   Qc2      Quebec    chilled  250   35.0
+## 32   Qc2      Quebec    chilled  350   38.8
+## 33   Qc2      Quebec    chilled  500   38.6
+## 34   Qc2      Quebec    chilled  675   37.5
+## 35   Qc2      Quebec    chilled 1000   42.4
+## 36   Qc3      Quebec    chilled   95   15.1
+## 37   Qc3      Quebec    chilled  175   21.0
+## 38   Qc3      Quebec    chilled  250   38.1
+## 39   Qc3      Quebec    chilled  350   34.0
+## 40   Qc3      Quebec    chilled  500   38.9
+## 41   Qc3      Quebec    chilled  675   39.6
+## 42   Qc3      Quebec    chilled 1000   41.4
+## 43   Mn1 Mississippi nonchilled   95   10.6
+## 44   Mn1 Mississippi nonchilled  175   19.2
+## 45   Mn1 Mississippi nonchilled  250   26.2
+## 46   Mn1 Mississippi nonchilled  350   30.0
+## 47   Mn1 Mississippi nonchilled  500   30.9
+## 48   Mn1 Mississippi nonchilled  675   32.4
+## 49   Mn1 Mississippi nonchilled 1000   35.5
+## 50   Mn2 Mississippi nonchilled   95   12.0
+## 51   Mn2 Mississippi nonchilled  175   22.0
+## 52   Mn2 Mississippi nonchilled  250   30.6
+## 53   Mn2 Mississippi nonchilled  350   31.8
+## 54   Mn2 Mississippi nonchilled  500   32.4
+## 55   Mn2 Mississippi nonchilled  675   31.1
+## 56   Mn2 Mississippi nonchilled 1000   31.5
+## 57   Mn3 Mississippi nonchilled   95   11.3
+## 58   Mn3 Mississippi nonchilled  175   19.4
+## 59   Mn3 Mississippi nonchilled  250   25.8
+## 60   Mn3 Mississippi nonchilled  350   27.9
+## 61   Mn3 Mississippi nonchilled  500   28.5
+## 62   Mn3 Mississippi nonchilled  675   28.1
+## 63   Mn3 Mississippi nonchilled 1000   27.8
+## 64   Mc1 Mississippi    chilled   95   10.5
+## 65   Mc1 Mississippi    chilled  175   14.9
+## 66   Mc1 Mississippi    chilled  250   18.1
+## 67   Mc1 Mississippi    chilled  350   18.9
+## 68   Mc1 Mississippi    chilled  500   19.5
+## 69   Mc1 Mississippi    chilled  675   22.2
+## 70   Mc1 Mississippi    chilled 1000   21.9
+## 71   Mc2 Mississippi    chilled   95    7.7
+## 72   Mc2 Mississippi    chilled  175   11.4
+## 73   Mc2 Mississippi    chilled  250   12.3
+## 74   Mc2 Mississippi    chilled  350   13.0
+## 75   Mc2 Mississippi    chilled  500   12.5
+## 76   Mc2 Mississippi    chilled  675   13.7
+## 77   Mc2 Mississippi    chilled 1000   14.4
+## 78   Mc3 Mississippi    chilled   95   10.6
+## 79   Mc3 Mississippi    chilled  175   18.0
+## 80   Mc3 Mississippi    chilled  250   17.9
+## 81   Mc3 Mississippi    chilled  350   17.9
+## 82   Mc3 Mississippi    chilled  500   17.9
+## 83   Mc3 Mississippi    chilled  675   18.9
+## 84   Mc3 Mississippi    chilled 1000   19.9
+```
+
+
+
+
+---
+
+
+
+
+# Data Frame
+
+- Work with dataframe `CO2`
+
+
+
+```r
+#better output: show first six rows or last six rows
+head(CO2)
+```
+
+```
+##   Plant   Type  Treatment conc uptake
+## 1   Qn1 Quebec nonchilled   95   16.0
+## 2   Qn1 Quebec nonchilled  175   30.4
+## 3   Qn1 Quebec nonchilled  250   34.8
+## 4   Qn1 Quebec nonchilled  350   37.2
+## 5   Qn1 Quebec nonchilled  500   35.3
+## 6   Qn1 Quebec nonchilled  675   39.2
+```
+
+```r
+tail(CO2)
+```
+
+```
+##    Plant        Type Treatment conc uptake
+## 79   Mc3 Mississippi   chilled  175   18.0
+## 80   Mc3 Mississippi   chilled  250   17.9
+## 81   Mc3 Mississippi   chilled  350   17.9
+## 82   Mc3 Mississippi   chilled  500   17.9
+## 83   Mc3 Mississippi   chilled  675   18.9
+## 84   Mc3 Mississippi   chilled 1000   19.9
+```
+
+
+
+---
+
+# Data Frame
+
+
+```r
+#better output: dimensions of the data frame
+#number of rows and columns
+dim(CO2)
+```
+
+```
+## [1] 84  5
+```
+
+```r
+nrow(CO2)
+```
+
+```
+## [1] 84
+```
+
+```r
+ncol(CO2)
+```
+
+```
+## [1] 5
+```
+
+```r
+names(CO2)
+```
+
+```
+## [1] "Plant"     "Type"      "Treatment" "conc"      "uptake"
+```
+
+```r
+colnames(CO2)
+```
+
+```
+## [1] "Plant"     "Type"      "Treatment" "conc"      "uptake"
+```
+
+
+---
+
+# Class Exercise: Data Frame
+
+- Load `LifeCycleSavings` data in your `R` work environment
+--
+
+```r
+dataLifeCycle &lt;- LifeCycleSavings
+dataLifeCycle
+```
+
+```
+##                   sr pop15 pop75     dpi  ddpi
+## Australia      11.43 29.35  2.87 2329.68  2.87
+## Austria        12.07 23.32  4.41 1507.99  3.93
+## Belgium        13.17 23.80  4.43 2108.47  3.82
+## Bolivia         5.75 41.89  1.67  189.13  0.22
+## Brazil         12.88 42.19  0.83  728.47  4.56
+## Canada          8.79 31.72  2.85 2982.88  2.43
+## Chile           0.60 39.74  1.34  662.86  2.67
+## China          11.90 44.75  0.67  289.52  6.51
+## Colombia        4.98 46.64  1.06  276.65  3.08
+## Costa Rica     10.78 47.64  1.14  471.24  2.80
+## Denmark        16.85 24.42  3.93 2496.53  3.99
+## Ecuador         3.59 46.31  1.19  287.77  2.19
+## Finland        11.24 27.84  2.37 1681.25  4.32
+## France         12.64 25.06  4.70 2213.82  4.52
+## Germany        12.55 23.31  3.35 2457.12  3.44
+## Greece         10.67 25.62  3.10  870.85  6.28
+## Guatamala       3.01 46.05  0.87  289.71  1.48
+## Honduras        7.70 47.32  0.58  232.44  3.19
+## Iceland         1.27 34.03  3.08 1900.10  1.12
+## India           9.00 41.31  0.96   88.94  1.54
+## Ireland        11.34 31.16  4.19 1139.95  2.99
+## Italy          14.28 24.52  3.48 1390.00  3.54
+## Japan          21.10 27.01  1.91 1257.28  8.21
+## Korea           3.98 41.74  0.91  207.68  5.81
+## Luxembourg     10.35 21.80  3.73 2449.39  1.57
+## Malta          15.48 32.54  2.47  601.05  8.12
+## Norway         10.25 25.95  3.67 2231.03  3.62
+## Netherlands    14.65 24.71  3.25 1740.70  7.66
+## New Zealand    10.67 32.61  3.17 1487.52  1.76
+## Nicaragua       7.30 45.04  1.21  325.54  2.48
+## Panama          4.44 43.56  1.20  568.56  3.61
+## Paraguay        2.02 41.18  1.05  220.56  1.03
+## Peru           12.70 44.19  1.28  400.06  0.67
+## Philippines    12.78 46.26  1.12  152.01  2.00
+## Portugal       12.49 28.96  2.85  579.51  7.48
+## South Africa   11.14 31.94  2.28  651.11  2.19
+## South Rhodesia 13.30 31.92  1.52  250.96  2.00
+## Spain          11.77 27.74  2.87  768.79  4.35
+## Sweden          6.86 21.44  4.54 3299.49  3.01
+## Switzerland    14.13 23.49  3.73 2630.96  2.70
+## Turkey          5.13 43.42  1.08  389.66  2.96
+## Tunisia         2.81 46.12  1.21  249.87  1.13
+## United Kingdom  7.81 23.27  4.46 1813.93  2.01
+## United States   7.56 29.81  3.43 4001.89  2.45
+## Venezuela       9.22 46.40  0.90  813.39  0.53
+## Zambia         18.56 45.25  0.56  138.33  5.14
+## Jamaica         7.72 41.12  1.73  380.47 10.23
+## Uruguay         9.24 28.13  2.72  766.54  1.88
+## Libya           8.89 43.69  2.07  123.58 16.71
+## Malaysia        4.71 47.20  0.66  242.69  5.08
+```
+
+
+
+---
+
+# Class Exercise: Data Frame
+
+- Load `LifeCycleSavings` data in your `R` work environment
+- Extract the column names and put  it in a variable `cnames`
+--
+
+```r
+dataLifeCycle &lt;- LifeCycleSavings
+cnames &lt;- colnames(dataLifeCycle)
+cnames
+```
+
+```
+## [1] "sr"    "pop15" "pop75" "dpi"   "ddpi"
+```
+
+
+---
+
+# Class Exercise: Data Frame
+
+- Load `LifeCycleSavings` data in your `R` work environment
+- Extract the column names and put  it in a variable `cnames`
+- Show the first eight rows of the loaded data
+--
+
+```r
+dataLifeCycle &lt;- LifeCycleSavings
+head(dataLifeCycle, n = 8)
+```
+
+```
+##              sr pop15 pop75     dpi ddpi
+## Australia 11.43 29.35  2.87 2329.68 2.87
+## Austria   12.07 23.32  4.41 1507.99 3.93
+## Belgium   13.17 23.80  4.43 2108.47 3.82
+## Bolivia    5.75 41.89  1.67  189.13 0.22
+## Brazil    12.88 42.19  0.83  728.47 4.56
+## Canada     8.79 31.72  2.85 2982.88 2.43
+## Chile      0.60 39.74  1.34  662.86 2.67
+## China     11.90 44.75  0.67  289.52 6.51
+```
+
+
+
+---
+
+# Class Exercise: Data Frame
+
+- Load `LifeCycleSavings` data in your `R` work environment
+- Extract the column names and put  it in a variable `cnames`
+- Show the first eight rows of the loaded data
+- Show the last three rows of the loaded data
+--
+
+```r
+dataLifeCycle &lt;- LifeCycleSavings
+tail(dataLifeCycle, n = 3)
+```
+
+```
+##            sr pop15 pop75    dpi  ddpi
+## Uruguay  9.24 28.13  2.72 766.54  1.88
+## Libya    8.89 43.69  2.07 123.58 16.71
+## Malaysia 4.71 47.20  0.66 242.69  5.08
+```
+
+
+
+---
+
+# Class Exercise: Data Frame
+
+- Load `LifeCycleSavings` data in your `R` work environment
+- Extract the column names and put  it in a variable `cnames`
+- Show the first eight rows of the loaded data
+- Show the last three rows of the loaded data
+- Construct a new column `pop15_75` which is sum of `pop15` and `pop75`
+--
+
+```r
+dataLifeCycle &lt;- LifeCycleSavings
+dataLifeCycle$pop15_75 &lt;- dataLifeCycle$pop15 + dataLifeCycle$pop75
+head(dataLifeCycle)
+```
+
+```
+##              sr pop15 pop75     dpi ddpi pop15_75
+## Australia 11.43 29.35  2.87 2329.68 2.87    32.22
+## Austria   12.07 23.32  4.41 1507.99 3.93    27.73
+## Belgium   13.17 23.80  4.43 2108.47 3.82    28.23
+## Bolivia    5.75 41.89  1.67  189.13 0.22    43.56
+## Brazil    12.88 42.19  0.83  728.47 4.56    43.02
+## Canada     8.79 31.72  2.85 2982.88 2.43    34.57
+```
+
+
+
+---
+
+
+class: inverse, center, middle
+name: tidyverse
+
+# tidyverse + ggplot
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+
+# Introduction
+
+- For reference: [`R for Data Science (2e)`](https://r4ds.hadley.nz/)
+- I will 
+  - Provide a quick tour of `tidy` environment
+  - Introduce `pipes`
+  - Spend a lot of time on data visualization
+  - Spend sometime introducing `RMarkdown`
+    
+- I  will **not**  introduce statistical analysis and methods
+  - No time
+    
+
+
+---
+
+# Workflow
+
+&lt;figure style="text-align: center;"&gt;
+&lt;img src="figures/data-science-r.png" style="width:100%; height:200%; object-fit:contain; margin:auto; display:block;"&gt;
+ &lt;figcaption&gt;Source: R4DS 2e &lt;/figcaption&gt;
+&lt;/figure&gt;
+
+- We will cover `Import`, `Tidy`, `Transform`, `Visualize`, and `Communicate`
+- `Model` part will not be covered
+
+
+
+---
+
+# Start of the workflow
+
+- You got the data
+- First thing you do: try to `feel` it
+  - Do some basic plots
+  - Understand the type of variables it has
+  - ...
+- To plot, we will use `ggplot` package
+  - loads with `tidyverse` package automatically
+- `ggplot`: (G)rammar of (G)raphics plot
+  - can only be used with `dataframes`
+
+
+```r
+pacman::p_load(tidyverse,
+               palmerpenguins,
+               ggthemes)
+```
+
+- We use `palmerpenguins` data
+
+---
+
+# palmerpenguins data
+
+- Description here: [`palmer penguins data`](https://allisonhorst.github.io/palmerpenguins/)
+- Contains two datasets: `penguins` and `penguins_raw`
+
+
+```r
+head(penguins)
+```
+
+```
+## # A tibble: 6 × 8
+##   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+## 1 Adelie  Torgersen           39.1          18.7               181        3750
+## 2 Adelie  Torgersen           39.5          17.4               186        3800
+## 3 Adelie  Torgersen           40.3          18                 195        3250
+## 4 Adelie  Torgersen           NA            NA                  NA          NA
+## 5 Adelie  Torgersen           36.7          19.3               193        3450
+## 6 Adelie  Torgersen           39.3          20.6               190        3650
+## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+```r
+dim(penguins)
+```
+
+```
+## [1] 344   8
+```
+
+
+---
+
+# palmerpenguins data
+
+- Description here: [`palmer penguins data`](https://allisonhorst.github.io/palmerpenguins/)
+- Contains two datasets: `penguins` and `penguins_raw`
+
+
+```r
+glimpse(penguins)
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, …
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, …
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, …
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…
+```
+
+---
+
+# palmerpenguins data - plotting
+
+- What is the relationship between flipper length (`flipper_length_mm`) and body mass (`body_mass_g`)  of penguins?
+- Step by step, follow me by writing your own version
+- `ggplot` works in layers 
+
+---
+
+# palmerpenguins data - plotting
+
+
+```r
+ggplot(data = penguins)
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-50-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# palmerpenguins data - plotting
+
+
+```r
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g))
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-51-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+# palmerpenguins data - plotting
+
+
+```r
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-52-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# palmerpenguins data - plotting
+
+
+```r
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g, color=species)) +
+  geom_point()
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-53-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+# palmerpenguins data - plotting
+
+
+```r
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g, color=species)) +
+  geom_point() +
+  #add linear fit (three separate lines for each group)
+  geom_smooth(method='lm') 
+```
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-54-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+# palmerpenguins data - plotting
+
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+
+
+```r
+p &lt;-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm') 
+```
+
+---
+
+# palmerpenguins data - plotting
+
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-57-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+- Different shapes for each species
+
+
+```r
+p &lt;-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm') 
+
+p
+```
+
+
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+- Different shapes for each species
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-59-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+- Add a new layer for axis and plot titles
+
+
+```r
+p &lt;-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+  
+  labs(
+    title = "Penguins: relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  )
+
+p
+```
+
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+- Add a new layer for axis and plot titles
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-61-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+- Change the theme of the plot
+
+
+```r
+p &lt;-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+  
+  #modern theme
+  theme_modern_rc() +
+  
+  labs(
+    title = "Penguins: relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  )
+
+p
+```
+
+
+
+---
+
+
+# palmerpenguins data - plotting
+
+- Change the theme of the plot
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-63-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+# End of Lecture 1
+
+- We learned 
+    - basic principles of `R`
+    - aesthetic (`aes`) mapping of `ggplot`
+    - basic understanding of lists
+    
+- Next class
+    - digging deeper into `tidyverse` environment
+    - learn about `pipes`
+    - understanding the concept of `tidy` data
+        - `pivot`
+    
+    
+    
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
