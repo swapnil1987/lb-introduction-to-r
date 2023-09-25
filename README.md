@@ -34,8 +34,10 @@ Superficial touchL:
 ## Course timing
 
 **Dates** Oct 2-4, 2023
+
 **Time** 13:00 -- 16:00
 
+**Location** 303, Totoriu g. 4 + MS Teams 
 
 
 
