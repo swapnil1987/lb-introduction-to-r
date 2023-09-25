@@ -5,7 +5,7 @@ Introduction to R course for Lietuvos Bankas (Bank of Lithuania). The course is 
 
 ## Lecture slides
 
-- Lecture 1: (slides)[https://github.com/swapnil1987/lb-introduction-to-r/blob/main/lectures/lecture1/lecture1.pdf]
+- Lecture 1: [slides](https://github.com/swapnil1987/lb-introduction-to-r/blob/main/lectures/lecture1/lecture1.pdf)
 
 
 ## Course structure
