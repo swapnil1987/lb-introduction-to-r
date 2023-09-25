@@ -3,6 +3,10 @@
 
 Introduction to R course for Lietuvos Bankas (Bank of Lithuania). The course is intended for audience with diverse background. To cater to the diverse audience needs, the course is divided  into three parts. The first part is focused on getting to know _git_, _R_, and project management through _Github/Gitkraken_. The second part is more focused on working with data, which involves _tidying_, _analyzing_, and _visualizing_ the data. The third part is optional, conditional on whether we can finish first two parts in the given timeframe.
 
+## Lecture slides
+
+- Lecture 1: (slides)[https://github.com/swapnil1987/lb-introduction-to-r/blob/main/lectures/lecture1/lecture1.pdf]
+
 
 ## Course structure
 
@@ -27,7 +31,7 @@ Introduction to R course for Lietuvos Bankas (Bank of Lithuania). The course is 
 - Intro to _functions_
 - Advanced intro to _functions_
 
-Superficial touchL:
+Superficial touch:
 - Parallel programming in R
 - _C++_ and _R_ glue: _Rcpp_ 
 
