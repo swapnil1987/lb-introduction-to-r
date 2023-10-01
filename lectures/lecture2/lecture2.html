@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Swapnil Singh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introduction to R
+]
+.subtitle[
+## Lecture 2: Introduction to <code>tidy</code> Environment
+]
+.author[
+### Swapnil Singh
+]
+.date[
+### Lietuvos Bankas | <a href="https://github.com/swapnil1987/lb-introduction-to-r">Course Link</a>
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.center-fit {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  max-height: 10%;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+# Lecture's Objectives
+
+1. Quick overview of how to transform the data
+    -  operation on `rows`
+    -  operation on `columns`
+    -  operation `==` verbs
+2. Learn about `pipes`
+    -  Concatenation of verbs through pipes
+3. How to work with `groups`
+
+---
+
+# Illustrative Data
+
+- We are going to use the `gapminder` data
+
+
+```r
+head(gapminder)
+```
+
+```
+## # A tibble: 6 × 6
+##   country     continent  year lifeExp      pop gdpPercap
+##   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+## 1 Afghanistan Asia       1952    28.8  8425333      779.
+## 2 Afghanistan Asia       1957    30.3  9240934      821.
+## 3 Afghanistan Asia       1962    32.0 10267083      853.
+## 4 Afghanistan Asia       1967    34.0 11537966      836.
+## 5 Afghanistan Asia       1972    36.1 13079460      740.
+## 6 Afghanistan Asia       1977    38.4 14880372      786.
+```
+
+```r
+colnames(gapminder)
+```
+
+```
+## [1] "country"   "continent" "year"      "lifeExp"   "pop"       "gdpPercap"
+```
+
+```r
+nrow(gapminder)
+```
+
+```
+## [1] 1704
+```
+
+---
+
+# Illustrative Data
+
+- We are going to use the `gapminder` data
+
+
+```r
+glimpse(gapminder)
+```
+
+```
+## Rows: 1,704
+## Columns: 6
+## $ country   &lt;fct&gt; "Afghanistan", "Afghanistan", "Afghanistan", "Afghanistan", …
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
+## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997, …
+## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854, 40.8…
+## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 14880372, 12…
+## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.1134, …
+```
+
+- Notice the difference between `head` and `glimpse`
+
+---
+
+# Difference: _tibble_ and _dataframe_
+
+- `tibbles` are special types  of data frame
+- Main differences
+    1. tibbles are designed for large datasets
+    2. tibble prints are concise: only few rows and only those columns that fit the screen
+- To view the full dataset:
+    - `View(gapminder)`: interactive dataviewer
+    - `print(gapminder, width = Inf)`: show all  columns
+- **Recommendation**
+    -  Use the combination of `glimpse()` and `View()` functions
+    
+
+
+---
+
+# Data transformation using `dplyr`
+
+- To transform data, you have to rely on `dplyr` package's functions
+- Automatically loads  with command `library(tidyverse)`
+- Huge repository of functions
+
+```r
+#number of functions in dplyr package
+funcsDplyr &lt;- ls('package:dplyr')  #note the package has to be loaded first
+numFuncsDplyr  &lt;- length(funcsDplyr)
+numFuncsDplyr
+```
+
+```
+## [1] 297
+```
+
+```r
+#first twenty functions
+print(funcsDplyr[1:20])
+```
+
+```
+##  [1] "%&gt;%"          "across"       "add_count"    "add_count_"   "add_row"     
+##  [6] "add_rownames" "add_tally"    "add_tally_"   "all_equal"    "all_of"      
+## [11] "all_vars"     "anti_join"    "any_of"       "any_vars"     "arrange"     
+## [16] "arrange_"     "arrange_all"  "arrange_at"   "arrange_if"   "as.tbl"
+```
+
+---
+
+# Data transformation using `dplyr`
+    
+- Each function in `dplyr` perform a **single** task
+- Data transformation requires multiple task
+- Single task `\(\rightarrow\)` multiple task: use `pipes` i.e. `|&gt;`
+- An inscrutable example at this moment
+
+
+```r
+newGapminder &lt;- gapminder |&gt; 
+  
+  # keep only Asian continent
+  filter(continent == "Asia") |&gt; 
+  
+  # life  expectancy &gt; 70
+  filter(lifeExp &gt; 70)
+```
+
+--
+
+
+```r
+glimpse(newGapminder)
+```
+
+```
+## Rows: 93
+## Columns: 6
+## $ country   &lt;fct&gt; "Bahrain", "Bahrain", "Bahrain", "Bahrain", "Bahrain", "Chin…
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
+## $ year      &lt;int&gt; 1987, 1992, 1997, 2002, 2007, 1997, 2002, 2007, 1972, 1977, …
+## $ lifeExp   &lt;dbl&gt; 70.750, 72.601, 73.925, 74.795, 75.635, 70.426, 72.028, 72.9…
+## $ pop       &lt;int&gt; 454612, 529491, 598561, 656397, 708573, 1230075000, 12804000…
+## $ gdpPercap &lt;dbl&gt; 18524.024, 19035.579, 20292.017, 23403.559, 29796.048, 2289.…
+```
+
+---
+
+# Organization of dplyr functions
+
+-  Functions can be broadly classified as
+    - `row`  functions
+    - `column` functions
+    - `group` functions
+    - `tables` functions
+-  This course we mostly cover the first three
+- Let's  deal them one by one
+
+
+---
+
+# Row functions: _filter_
+
+- `filter`
+    - keep only rows satisfying certain criteria
+    
+
+```r
+#keep only those observation with gdp per capital greater thann 1000
+newGapminder &lt;-  gapminder |&gt; 
+  filter(lifeExp &gt; 1000)
+```
+
+- Operations
+    - _&gt;_ greater than
+    - _&gt;=_ greater than or equal to
+    - &lt; less than
+    - &lt;=  less than or equal  to
+    - == equal to
+    - != not equal to
+
+- Combination: 
+    - `&amp;` and
+    - `|` or
+
+---
+
+
+# Row functions: _filter_
+
+
+```r
+ gapminder |&gt; 
+  
+  # focus only on Asian countries with life expectancy greater than 70
+  filter(lifeExp &gt; 70 &amp; continent=='Asia') |&gt; 
+  
+  #focus  only on countries with per capita GDP greater than 2000
+  filter(gdpPercap &gt; 2000)
+```
+
+```
+## # A tibble: 91 × 6
+##    country          continent  year lifeExp        pop gdpPercap
+##    &lt;fct&gt;            &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;      &lt;int&gt;     &lt;dbl&gt;
+##  1 Bahrain          Asia       1987    70.8     454612    18524.
+##  2 Bahrain          Asia       1992    72.6     529491    19036.
+##  3 Bahrain          Asia       1997    73.9     598561    20292.
+##  4 Bahrain          Asia       2002    74.8     656397    23404.
+##  5 Bahrain          Asia       2007    75.6     708573    29796.
+##  6 China            Asia       1997    70.4 1230075000     2289.
+##  7 China            Asia       2002    72.0 1280400000     3119.
+##  8 China            Asia       2007    73.0 1318683096     4959.
+##  9 Hong Kong, China Asia       1972    72      4115700     8316.
+## 10 Hong Kong, China Asia       1977    73.6    4583700    11186.
+## # ℹ 81 more rows
+```
+
+
+---
+
+# Row functions: _filter_
+
+- Use `%in%` when combining `|` and `==`
+
+
+```r
+gapminder |&gt; 
+  filter(country == 'Afghanistan' | country == 'Mali' )
+```
+
+```
+## # A tibble: 24 × 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 14 more rows
+```
+
+
+
+---
+
+# Row functions: _filter_
+
+
+```r
+gapminder |&gt; 
+  filter(country %in% c('Afghanistan', 'Mali') )
+```
+
+```
+## # A tibble: 24 × 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 14 more rows
+```
+
+
+---
+
+# Row functions: _filter_
+
+- When filtering, `dplyr::filter` operates on `gapminder` and prints the final results
+- `gapminder` data by itself is untouched
+- You can store the result in the new `dataframe`
+
+
+```r
+newGapminder &lt;-  gapminder |&gt; 
+  
+  filter(country %in% c('Afghanistan', 'Mali') )
+
+newGapminder
+```
+
+```
+## # A tibble: 24 × 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 14 more rows
+```
+
+
+---
+
+
+# Row functions: _arrange_
+
+- Change  the ordering of rows based on the value of column(s)
+
+
+```r
+gapminder |&gt; 
+  arrange(year, gdpPercap) 
+```
+
+```
+## # A tibble: 1,704 × 6
+##    country           continent  year lifeExp       pop gdpPercap
+##    &lt;fct&gt;             &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;     &lt;int&gt;     &lt;dbl&gt;
+##  1 Lesotho           Africa     1952    42.1    748747      299.
+##  2 Guinea-Bissau     Africa     1952    32.5    580653      300.
+##  3 Eritrea           Africa     1952    35.9   1438760      329.
+##  4 Myanmar           Asia       1952    36.3  20092996      331 
+##  5 Burundi           Africa     1952    39.0   2445618      339.
+##  6 Ethiopia          Africa     1952    34.1  20860941      362.
+##  7 Cambodia          Asia       1952    39.4   4693836      368.
+##  8 Malawi            Africa     1952    36.3   2917802      369.
+##  9 Equatorial Guinea Africa     1952    34.5    216964      376.
+## 10 China             Asia       1952    44   556263527      400.
+## # ℹ 1,694 more rows
+```
+
+---
+
+
+# Row functions: _arrange_
+
+
+- Use `desc` within `arrange` for sorting from largest to smallest
+    - Caveat: can use only one argument
+
+
+```r
+gapminder |&gt; 
+  arrange(desc( gdpPercap)) 
+```
+
+```
+## # A tibble: 1,704 × 6
+##    country   continent  year lifeExp     pop gdpPercap
+##    &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;     &lt;dbl&gt;
+##  1 Kuwait    Asia       1957    58.0  212846   113523.
+##  2 Kuwait    Asia       1972    67.7  841934   109348.
+##  3 Kuwait    Asia       1952    55.6  160000   108382.
+##  4 Kuwait    Asia       1962    60.5  358266    95458.
+##  5 Kuwait    Asia       1967    64.6  575003    80895.
+##  6 Kuwait    Asia       1977    69.3 1140357    59265.
+##  7 Norway    Europe     2007    80.2 4627926    49357.
+##  8 Kuwait    Asia       2007    77.6 2505559    47307.
+##  9 Singapore Asia       2007    80.0 4553009    47143.
+## 10 Norway    Europe     2002    79.0 4535591    44684.
+## # ℹ 1,694 more rows
+```
+
+
+---
+
+# Row functions: _distinct_
+
+- _distinct_ searches and keeps all unique  rows in a dataset
+
+
+```r
+gapminder |&gt; 
+  distinct()
+```
+
+```
+## # A tibble: 1,704 × 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+
+---
+
+# Row functions: _distinct_
+
+- _distinct_ on it own is not very useful
+- When we want to keep _distinct_ combination of some variables, it is very useful
+
+
+
+```r
+gapminder |&gt; 
+  distinct(year) |&gt; 
+  head(n=4)
+```
+
+```
+## # A tibble: 4 × 1
+##    year
+##   &lt;int&gt;
+## 1  1952
+## 2  1957
+## 3  1962
+## 4  1967
+```
+
+
+---
+
+# Row functions: _distinct_
+
+
+- Note that only `year` column is kept
+- To rectify, use `.keep_all = TRUE`
+
+
+
+```r
+gapminder |&gt; 
+  distinct(year, .keep_all = TRUE) |&gt; 
+  head(n=4)
+```
+
+```
+## # A tibble: 4 × 6
+##   country     continent  year lifeExp      pop gdpPercap
+##   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+## 1 Afghanistan Asia       1952    28.8  8425333      779.
+## 2 Afghanistan Asia       1957    30.3  9240934      821.
+## 3 Afghanistan Asia       1962    32.0 10267083      853.
+## 4 Afghanistan Asia       1967    34.0 11537966      836.
+```
+
+
+---
+
+# Column functions: _mutate_
+- _mutate_ helps add new columns using existing columns
+
+
+```r
+gapminder |&gt; 
+  mutate(logGdpPerCapita = log(gdpPercap))
+```
+
+```
+## # A tibble: 1,704 × 7
+##    country     continent  year lifeExp      pop gdpPercap logGdpPerCapita
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;           &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.            6.66
+##  2 Afghanistan Asia       1957    30.3  9240934      821.            6.71
+##  3 Afghanistan Asia       1962    32.0 10267083      853.            6.75
+##  4 Afghanistan Asia       1967    34.0 11537966      836.            6.73
+##  5 Afghanistan Asia       1972    36.1 13079460      740.            6.61
+##  6 Afghanistan Asia       1977    38.4 14880372      786.            6.67
+##  7 Afghanistan Asia       1982    39.9 12881816      978.            6.89
+##  8 Afghanistan Asia       1987    40.8 13867957      852.            6.75
+##  9 Afghanistan Asia       1992    41.7 16317921      649.            6.48
+## 10 Afghanistan Asia       1997    41.8 22227415      635.            6.45
+## # ℹ 1,694 more rows
+```
+
+
+
+---
+
+# Column functions: _mutate_
+
+- Imagine you have a dataset of `500` columns
+- You do a `mutate` and then `View` it
+- By default new column is added  to the last
+- Use `.before` to put the new column first
+
+```r
+gapminder |&gt; 
+  mutate(logGdpPerCapita = log(gdpPercap), .before=1)
+```
+
+```
+## # A tibble: 1,704 × 7
+##    logGdpPerCapita country     continent  year lifeExp      pop gdpPercap
+##              &lt;dbl&gt; &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1            6.66 Afghanistan Asia       1952    28.8  8425333      779.
+##  2            6.71 Afghanistan Asia       1957    30.3  9240934      821.
+##  3            6.75 Afghanistan Asia       1962    32.0 10267083      853.
+##  4            6.73 Afghanistan Asia       1967    34.0 11537966      836.
+##  5            6.61 Afghanistan Asia       1972    36.1 13079460      740.
+##  6            6.67 Afghanistan Asia       1977    38.4 14880372      786.
+##  7            6.89 Afghanistan Asia       1982    39.9 12881816      978.
+##  8            6.75 Afghanistan Asia       1987    40.8 13867957      852.
+##  9            6.48 Afghanistan Asia       1992    41.7 16317921      649.
+## 10            6.45 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+---
+
+# Column functions: _mutate_
+
+-  Can use `.after` also
+
+```r
+gapminder |&gt; 
+  mutate(logGdpPerCapita = log(gdpPercap), .after=year)
+```
+
+```
+## # A tibble: 1,704 × 7
+##    country     continent  year logGdpPerCapita lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;           &lt;dbl&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952            6.66    28.8  8425333      779.
+##  2 Afghanistan Asia       1957            6.71    30.3  9240934      821.
+##  3 Afghanistan Asia       1962            6.75    32.0 10267083      853.
+##  4 Afghanistan Asia       1967            6.73    34.0 11537966      836.
+##  5 Afghanistan Asia       1972            6.61    36.1 13079460      740.
+##  6 Afghanistan Asia       1977            6.67    38.4 14880372      786.
+##  7 Afghanistan Asia       1982            6.89    39.9 12881816      978.
+##  8 Afghanistan Asia       1987            6.75    40.8 13867957      852.
+##  9 Afghanistan Asia       1992            6.48    41.7 16317921      649.
+## 10 Afghanistan Asia       1997            6.45    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+---
+
+# Column functions: _select_
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
