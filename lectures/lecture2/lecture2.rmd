@@ -376,6 +376,351 @@ gapminder |>
 
 # Column functions: _select_
 
+- Select columns by name
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  select(country,year, lifeExp)
+```
+
+
+---
+
+
+# Column functions: _select_
+
+```{r, cache=TRUE, results='markup'}
+colnames(gapminder)
+
+# select columns between country and pop, inclusive
+# don't recommend this though
+gapminder |> 
+  select(country:pop)
+
+```
+
+---
+
+# Column functions: _select_
+
+- Select based on column characteristics
+
+```{r, cache=TRUE, results='markup'}
+
+# select only numeric columns
+gapminder |> 
+  select(where(is.numeric))
+```
+
+
+---
+
+# Column functions: _select_
+
+- select columns which starts with some patterns
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  select(starts_with('co'))
+
+```
+
+---
+
+# Column  functions: _select_
+
+- select columns which ends with some patterns
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  select(ends_with('p'))
+
+```
+
+---
+
+# Column functions: _select_
+
+- select columns which contains some patterns
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  select(contains('t'))
+
+```
+
+---
+
+# Column functions: _rename_
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  rename(life_expectancy = lifeExp)
+
+```
+
+---
+
+#  Combination of _pipes_
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  # keep only Asian continent
+  filter(continent == "Asia") |> 
+  #select some columns 
+  select(country, lifeExp, year) |> 
+  #take the log of lifeExp
+  mutate(logLifeExp = log(lifeExp), .after=lifeExp)
+
+```
+
+
+---
+
+# Working with _groups_
+
+- We learned how to use functions for _rows_ or _columns_
+- What can we do, if we want to operate these functions within _groups_?
+    - Which country has highest life expectancy in **Asia**?
+    - Which country has lowest life expectancy in **Africa**?
+- We use  `group_by()` function
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  group_by(continent) 
+
+```
+
+
+---
+
+# Working with _groups_
+
+- Once you  used `group_by()`, any row operations are applicable within each group
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  group_by(continent) |> 
+  summarize(avgLifeExp = mean(lifeExp, na.rm = TRUE))
+
+```
+
+---
+--- 
+
+# Working with _groups_
+
+-  More elaborate summary
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  group_by(continent) |> 
+  summarize(avgLifeExp = mean(lifeExp, na.rm = TRUE),
+            medianLifeExp = median(lifeExp, na.rm=TRUE),
+            numObs = n(),
+            avgGdpPerCap = mean(gdpPercap, na.rm = TRUE))
+
+
+```
+
+
+---
+
+# Multiple _groups_
+
+-  Nothing stops you from using multiple groups
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  group_by(continent, year)
+
+```
 
 
 
+
+
+
+
+---
+
+class: inverse, center, middle
+name: practice
+
+#  Coding Exercise
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Download World Bank's Fiscal Space data: [link](https://www.worldbank.org/en/research/brief/fiscal-space)
+- Unzip it and put  it in  folder where you can access it 
+- Download  both `STATA` and `Excel` files 
+    -  `Excel` file has glossary
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspace <- haven::read_dta(file = paste0('raw_data/', 'Fiscal-space-data.dta'))
+
+glimpse(fspace)
+
+```
+
+---
+
+# World Bank Fiscal Space Data
+
+- Count the number of countries in each year and store it in a `dataframe` called  `fspaceNumCountries`
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNumCountries <-  fspace |> 
+  group_by(year) |> 
+  summarize(numCountries  = n())
+
+fspaceNumCountries
+
+```
+
+
+---
+
+# World  Bank Fiscal Space Data
+
+- Compute the mean and median of following variables each year
+    - general government gross debt (`ggdy`)
+    - general government debt in foreign currency (`fxsovsh`)
+    - total external debt in stocks (`xtdebty`)
+    
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceSummary <- fspace |> 
+  group_by(year) |> 
+  summarise(numCountries = n(),
+            mean_ggdy = mean(ggdy, na.rm=TRUE),
+            mean_fxsovsh = mean(fxsovsh, na.rm=TRUE),
+            mean_xtdebty = mean(xtdebty, na.rm=TRUE),
+            median_ggdy = median(ggdy, na.rm=TRUE),
+            median_fxsovsh = median(fxsovsh, na.rm=TRUE),
+            median_xtdebty = median(xtdebty, na.rm=TRUE))
+
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+```{r, cache=TRUE, results='markup'}
+
+glimpse(fspaceSummary)
+
+```
+
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Construct a new dataset which contains following variables
+    - `year`
+    - `country`
+    - `ggdy`
+    - `fxsovsh`
+    - `xtdebty`
+    
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspace |> 
+  select(year, country, ggdy, fxsovsh, xtdebty)
+glimpse(fspaceNew)
+
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Construct  a new variable which is the logarithm of `ggdy`
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspaceNew |> 
+  mutate(log_ggdy = log(ggdy))
+
+glimpse(fspaceNew)
+
+```
+
+
+---
+
+#  World Bank Fiscal Space Data
+
+- Keep only those observations where `log_ggdy > 5`
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspaceNew |> 
+  filter(log_ggdy > 5)
+
+glimpse(fspaceNew)
+
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Do all operations we discussed till now in one go
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspace |> 
+  select(year, country, ggdy, fxsovsh, xtdebty) |> 
+  mutate(log_ggdy = log(ggdy)) |> 
+  filter(log_ggdy > 5)
+glimpse(fspaceNew)
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r gen_pdf, include = FALSE, cache = FALSE, eval = TRUE}
+infile = list.files(pattern = '.html')
+pagedown::chrome_print(input = infile, timeout = 100)
+```

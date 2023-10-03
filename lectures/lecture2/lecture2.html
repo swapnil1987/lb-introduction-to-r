@@ -617,6 +617,641 @@ gapminder |&gt;
 
 # Column functions: _select_
 
+- Select columns by name
+
+
+```r
+gapminder |&gt; 
+  select(country,year, lifeExp)
+```
+
+```
+## # A tibble: 1,704 × 3
+##    country      year lifeExp
+##    &lt;fct&gt;       &lt;int&gt;   &lt;dbl&gt;
+##  1 Afghanistan  1952    28.8
+##  2 Afghanistan  1957    30.3
+##  3 Afghanistan  1962    32.0
+##  4 Afghanistan  1967    34.0
+##  5 Afghanistan  1972    36.1
+##  6 Afghanistan  1977    38.4
+##  7 Afghanistan  1982    39.9
+##  8 Afghanistan  1987    40.8
+##  9 Afghanistan  1992    41.7
+## 10 Afghanistan  1997    41.8
+## # ℹ 1,694 more rows
+```
+
+
+---
+
+
+# Column functions: _select_
+
+
+```r
+colnames(gapminder)
+```
+
+```
+## [1] "country"   "continent" "year"      "lifeExp"   "pop"       "gdpPercap"
+```
+
+```r
+# select columns between country and pop, inclusive
+# don't recommend this though
+gapminder |&gt; 
+  select(country:pop)
+```
+
+```
+## # A tibble: 1,704 × 5
+##    country     continent  year lifeExp      pop
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333
+##  2 Afghanistan Asia       1957    30.3  9240934
+##  3 Afghanistan Asia       1962    32.0 10267083
+##  4 Afghanistan Asia       1967    34.0 11537966
+##  5 Afghanistan Asia       1972    36.1 13079460
+##  6 Afghanistan Asia       1977    38.4 14880372
+##  7 Afghanistan Asia       1982    39.9 12881816
+##  8 Afghanistan Asia       1987    40.8 13867957
+##  9 Afghanistan Asia       1992    41.7 16317921
+## 10 Afghanistan Asia       1997    41.8 22227415
+## # ℹ 1,694 more rows
+```
+
+---
+
+# Column functions: _select_
+
+- Select based on column characteristics
+
+
+```r
+# select only numeric columns
+gapminder |&gt; 
+  select(where(is.numeric))
+```
+
+```
+## # A tibble: 1,704 × 4
+##     year lifeExp      pop gdpPercap
+##    &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1  1952    28.8  8425333      779.
+##  2  1957    30.3  9240934      821.
+##  3  1962    32.0 10267083      853.
+##  4  1967    34.0 11537966      836.
+##  5  1972    36.1 13079460      740.
+##  6  1977    38.4 14880372      786.
+##  7  1982    39.9 12881816      978.
+##  8  1987    40.8 13867957      852.
+##  9  1992    41.7 16317921      649.
+## 10  1997    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+
+---
+
+# Column functions: _select_
+
+- select columns which starts with some patterns
+
+
+```r
+gapminder |&gt; 
+  select(starts_with('co'))
+```
+
+```
+## # A tibble: 1,704 × 2
+##    country     continent
+##    &lt;fct&gt;       &lt;fct&gt;    
+##  1 Afghanistan Asia     
+##  2 Afghanistan Asia     
+##  3 Afghanistan Asia     
+##  4 Afghanistan Asia     
+##  5 Afghanistan Asia     
+##  6 Afghanistan Asia     
+##  7 Afghanistan Asia     
+##  8 Afghanistan Asia     
+##  9 Afghanistan Asia     
+## 10 Afghanistan Asia     
+## # ℹ 1,694 more rows
+```
+
+---
+
+# Column  functions: _select_
+
+- select columns which ends with some patterns
+
+
+```r
+gapminder |&gt; 
+  select(ends_with('p'))
+```
+
+```
+## # A tibble: 1,704 × 3
+##    lifeExp      pop gdpPercap
+##      &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1    28.8  8425333      779.
+##  2    30.3  9240934      821.
+##  3    32.0 10267083      853.
+##  4    34.0 11537966      836.
+##  5    36.1 13079460      740.
+##  6    38.4 14880372      786.
+##  7    39.9 12881816      978.
+##  8    40.8 13867957      852.
+##  9    41.7 16317921      649.
+## 10    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+---
+
+# Column functions: _select_
+
+- select columns which contains some patterns
+
+
+```r
+gapminder |&gt; 
+  select(contains('t'))
+```
+
+```
+## # A tibble: 1,704 × 2
+##    country     continent
+##    &lt;fct&gt;       &lt;fct&gt;    
+##  1 Afghanistan Asia     
+##  2 Afghanistan Asia     
+##  3 Afghanistan Asia     
+##  4 Afghanistan Asia     
+##  5 Afghanistan Asia     
+##  6 Afghanistan Asia     
+##  7 Afghanistan Asia     
+##  8 Afghanistan Asia     
+##  9 Afghanistan Asia     
+## 10 Afghanistan Asia     
+## # ℹ 1,694 more rows
+```
+
+---
+
+# Column functions: _rename_
+
+
+```r
+gapminder |&gt; 
+  rename(life_expectancy = lifeExp)
+```
+
+```
+## # A tibble: 1,704 × 6
+##    country     continent  year life_expectancy      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;           &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952            28.8  8425333      779.
+##  2 Afghanistan Asia       1957            30.3  9240934      821.
+##  3 Afghanistan Asia       1962            32.0 10267083      853.
+##  4 Afghanistan Asia       1967            34.0 11537966      836.
+##  5 Afghanistan Asia       1972            36.1 13079460      740.
+##  6 Afghanistan Asia       1977            38.4 14880372      786.
+##  7 Afghanistan Asia       1982            39.9 12881816      978.
+##  8 Afghanistan Asia       1987            40.8 13867957      852.
+##  9 Afghanistan Asia       1992            41.7 16317921      649.
+## 10 Afghanistan Asia       1997            41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+---
+
+#  Combination of _pipes_
+
+
+```r
+gapminder |&gt; 
+  # keep only Asian continent
+  filter(continent == "Asia") |&gt; 
+  #select some columns 
+  select(country, lifeExp, year) |&gt; 
+  #take the log of lifeExp
+  mutate(logLifeExp = log(lifeExp), .after=lifeExp)
+```
+
+```
+## # A tibble: 396 × 4
+##    country     lifeExp logLifeExp  year
+##    &lt;fct&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;
+##  1 Afghanistan    28.8       3.36  1952
+##  2 Afghanistan    30.3       3.41  1957
+##  3 Afghanistan    32.0       3.47  1962
+##  4 Afghanistan    34.0       3.53  1967
+##  5 Afghanistan    36.1       3.59  1972
+##  6 Afghanistan    38.4       3.65  1977
+##  7 Afghanistan    39.9       3.69  1982
+##  8 Afghanistan    40.8       3.71  1987
+##  9 Afghanistan    41.7       3.73  1992
+## 10 Afghanistan    41.8       3.73  1997
+## # ℹ 386 more rows
+```
+
+
+---
+
+# Working with _groups_
+
+- We learned how to use functions for _rows_ or _columns_
+- What can we do, if we want to operate these functions within _groups_?
+    - Which country has highest life expectancy in **Asia**?
+    - Which country has lowest life expectancy in **Africa**?
+- We use  `group_by()` function
+
+
+```r
+gapminder |&gt; 
+  group_by(continent) 
+```
+
+```
+## # A tibble: 1,704 × 6
+## # Groups:   continent [5]
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+
+---
+
+# Working with _groups_
+
+- Once you  used `group_by()`, any row operations are applicable within each group
+
+
+```r
+gapminder |&gt; 
+  group_by(continent) |&gt; 
+  summarize(avgLifeExp = mean(lifeExp, na.rm = TRUE))
+```
+
+```
+## # A tibble: 5 × 2
+##   continent avgLifeExp
+##   &lt;fct&gt;          &lt;dbl&gt;
+## 1 Africa          48.9
+## 2 Americas        64.7
+## 3 Asia            60.1
+## 4 Europe          71.9
+## 5 Oceania         74.3
+```
+
+---
+--- 
+
+# Working with _groups_
+
+-  More elaborate summary
+
+
+```r
+gapminder |&gt; 
+  group_by(continent) |&gt; 
+  summarize(avgLifeExp = mean(lifeExp, na.rm = TRUE),
+            medianLifeExp = median(lifeExp, na.rm=TRUE),
+            numObs = n(),
+            avgGdpPerCap = mean(gdpPercap, na.rm = TRUE))
+```
+
+```
+## # A tibble: 5 × 5
+##   continent avgLifeExp medianLifeExp numObs avgGdpPerCap
+##   &lt;fct&gt;          &lt;dbl&gt;         &lt;dbl&gt;  &lt;int&gt;        &lt;dbl&gt;
+## 1 Africa          48.9          47.8    624        2194.
+## 2 Americas        64.7          67.0    300        7136.
+## 3 Asia            60.1          61.8    396        7902.
+## 4 Europe          71.9          72.2    360       14469.
+## 5 Oceania         74.3          73.7     24       18622.
+```
+
+
+---
+
+# Multiple _groups_
+
+-  Nothing stops you from using multiple groups
+
+
+```r
+gapminder |&gt; 
+  group_by(continent, year)
+```
+
+```
+## # A tibble: 1,704 × 6
+## # Groups:   continent, year [60]
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+
+
+
+
+
+
+---
+
+class: inverse, center, middle
+name: practice
+
+#  Coding Exercise
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Download World Bank's Fiscal Space data: [link](https://www.worldbank.org/en/research/brief/fiscal-space)
+- Unzip it and put  it in  folder where you can access it 
+- Download  both `STATA` and `Excel` files 
+    -  `Excel` file has glossary
+--
+
+
+```r
+fspace &lt;- haven::read_dta(file = paste0('raw_data/', 'Fiscal-space-data.dta'))
+
+glimpse(fspace)
+```
+
+```
+## Rows: 6,666
+## Columns: 31
+## $ ccode     &lt;chr&gt; "USA", "USA", "USA", "USA", "USA", "USA", "USA", "USA", "USA…
+## $ ifscode   &lt;dbl&gt; 111, 111, 111, 111, 111, 111, 111, 111, 111, 111, 111, 111, …
+## $ country   &lt;chr&gt; "United States", "United States", "United States", "United S…
+## $ group     &lt;dbl+lbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ region    &lt;dbl+lbl&gt; 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,…
+## $ inc       &lt;dbl+lbl&gt; 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,…
+## $ year      &lt;dbl&gt; 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, …
+## $ ggdy      &lt;dbl&gt; 61.71774, 66.34741, 68.65210, 70.56248, 69.38563, 68.96503, …
+## $ pby       &lt;dbl&gt; -0.4214212, -0.8911726, -1.8340608, -1.1126696, 0.1118852, 0…
+## $ cby       &lt;dbl&gt; -4.4734335, -4.3848381, -5.5710871, -4.6584245, -3.5298614, …
+## $ fby       &lt;dbl&gt; -4.1060773, -4.9237521, -5.9139839, -5.0755329, -3.6825231, …
+## $ dfggd     &lt;dbl&gt; 318.1225, 341.9860, 353.8655, 363.7125, 357.6465, 355.4785, …
+## $ dffb      &lt;dbl&gt; -21.164671, -25.379355, -30.483479, -26.161705, -18.981472, …
+## $ ggdma     &lt;dbl&gt; 82.08093, 85.49642, 87.83139, 89.30785, 88.02869, 86.74273, …
+## $ fbma      &lt;dbl&gt; -5.4608393, -6.3448323, -7.5661696, -6.4238799, -4.6719717, …
+## $ fxsovsh   &lt;dbl&gt; 0.13454895, 0.12472536, 0.10832959, 0.10143403, 0.10265220, …
+## $ secnres   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2.618792, 2.7598…
+## $ fordebtsh &lt;dbl&gt; NA, NA, NA, NA, NA, 11.89596, 14.60060, 16.07677, 16.21104, …
+## $ concggd   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ avglife   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 7.857373…
+## $ debtduey  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ xtdebty   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 60.69567…
+## $ fxdebtall &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ prdebty   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 44.76070…
+## $ pscy      &lt;dbl&gt; 124.6, 122.6, 118.7, 118.4, 118.8, 120.8, 121.6, 122.9, 127.…
+## $ stdebtall &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 41.18650…
+## $ stdebtres &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 1556.279…
+## $ xtdebtres &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 3778.614…
+## $ xtdebtrxg &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 9284.54,…
+## $ cds5y     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ sovrate   &lt;dbl&gt; 21.00000, 21.00000, 21.00000, 21.00000, 21.00000, 21.00000, …
+```
+
+---
+
+# World Bank Fiscal Space Data
+
+- Count the number of countries in each year and store it in a `dataframe` called  `fspaceNumCountries`
+
+--
+
+
+```r
+fspaceNumCountries &lt;-  fspace |&gt; 
+  group_by(year) |&gt; 
+  summarize(numCountries  = n())
+
+fspaceNumCountries
+```
+
+```
+## # A tibble: 33 × 2
+##     year numCountries
+##    &lt;dbl&gt;        &lt;int&gt;
+##  1  1990          202
+##  2  1991          202
+##  3  1992          202
+##  4  1993          202
+##  5  1994          202
+##  6  1995          202
+##  7  1996          202
+##  8  1997          202
+##  9  1998          202
+## 10  1999          202
+## # ℹ 23 more rows
+```
+
+
+---
+
+# World  Bank Fiscal Space Data
+
+- Compute the mean and median of following variables each year
+    - general government gross debt (`ggdy`)
+    - general government debt in foreign currency (`fxsovsh`)
+    - total external debt in stocks (`xtdebty`)
+    
+--
+
+
+```r
+fspaceSummary &lt;- fspace |&gt; 
+  group_by(year) |&gt; 
+  summarise(numCountries = n(),
+            mean_ggdy = mean(ggdy, na.rm=TRUE),
+            mean_fxsovsh = mean(fxsovsh, na.rm=TRUE),
+            mean_xtdebty = mean(xtdebty, na.rm=TRUE),
+            median_ggdy = median(ggdy, na.rm=TRUE),
+            median_fxsovsh = median(fxsovsh, na.rm=TRUE),
+            median_xtdebty = median(xtdebty, na.rm=TRUE))
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+
+```r
+glimpse(fspaceSummary)
+```
+
+```
+## Rows: 33
+## Columns: 8
+## $ year           &lt;dbl&gt; 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1…
+## $ numCountries   &lt;int&gt; 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, …
+## $ mean_ggdy      &lt;dbl&gt; 69.20511, 66.70285, 70.51369, 68.55063, 70.04780, 58.74…
+## $ mean_fxsovsh   &lt;dbl&gt; 0.1345489, 0.1247254, 0.1083296, 0.1014340, 0.1026522, …
+## $ mean_xtdebty   &lt;dbl&gt; 69.90365, 76.24725, 66.24232, 65.76774, 70.31518, 63.80…
+## $ median_ggdy    &lt;dbl&gt; 63.0220, 62.2260, 60.5550, 60.6290, 60.4210, 55.1510, 5…
+## $ median_fxsovsh &lt;dbl&gt; 0.1345489, 0.1247254, 0.1083296, 0.1014340, 0.1026522, …
+## $ median_xtdebty &lt;dbl&gt; 46.19101, 49.57336, 46.39834, 48.51647, 50.44743, 47.92…
+```
+
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Construct a new dataset which contains following variables
+    - `year`
+    - `country`
+    - `ggdy`
+    - `fxsovsh`
+    - `xtdebty`
+    
+--
+
+
+```r
+fspaceNew &lt;- fspace |&gt; 
+  select(year, country, ggdy, fxsovsh, xtdebty)
+glimpse(fspaceNew)
+```
+
+```
+## Rows: 6,666
+## Columns: 5
+## $ year    &lt;dbl&gt; 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 20…
+## $ country &lt;chr&gt; "United States", "United States", "United States", "United Sta…
+## $ ggdy    &lt;dbl&gt; 61.71774, 66.34741, 68.65210, 70.56248, 69.38563, 68.96503, 68…
+## $ fxsovsh &lt;dbl&gt; 0.13454895, 0.12472536, 0.10832959, 0.10143403, 0.10265220, 0.…
+## $ xtdebty &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 60.69567, …
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Construct  a new variable which is the logarithm of `ggdy`
+
+--
+
+
+```r
+fspaceNew &lt;- fspaceNew |&gt; 
+  mutate(log_ggdy = log(ggdy))
+
+glimpse(fspaceNew)
+```
+
+```
+## Rows: 6,666
+## Columns: 6
+## $ year     &lt;dbl&gt; 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2…
+## $ country  &lt;chr&gt; "United States", "United States", "United States", "United St…
+## $ ggdy     &lt;dbl&gt; 61.71774, 66.34741, 68.65210, 70.56248, 69.38563, 68.96503, 6…
+## $ fxsovsh  &lt;dbl&gt; 0.13454895, 0.12472536, 0.10832959, 0.10143403, 0.10265220, 0…
+## $ xtdebty  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 60.69567,…
+## $ log_ggdy &lt;dbl&gt; 4.122571, 4.194905, 4.229052, 4.256499, 4.239680, 4.233599, 4…
+```
+
+
+---
+
+#  World Bank Fiscal Space Data
+
+- Keep only those observations where `log_ggdy &gt; 5`
+
+--
+
+
+```r
+fspaceNew &lt;- fspaceNew |&gt; 
+  filter(log_ggdy &gt; 5)
+
+glimpse(fspaceNew)
+```
+
+```
+## Rows: 174
+## Columns: 6
+## $ year     &lt;dbl&gt; 2020, 2021, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2…
+## $ country  &lt;chr&gt; "Italy", "Italy", "Japan", "Japan", "Japan", "Japan", "Japan"…
+## $ ggdy     &lt;dbl&gt; 154.890, 149.809, 154.096, 160.021, 169.490, 174.594, 174.142…
+## $ fxsovsh  &lt;dbl&gt; 0.1160312, 0.1195998, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+## $ xtdebty  &lt;dbl&gt; 149.98938, 131.50735, NA, 29.96744, 31.82130, 31.48246, 32.87…
+## $ log_ggdy &lt;dbl&gt; 5.042715, 5.009361, 5.037576, 5.075305, 5.132794, 5.162463, 5…
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Do all operations we discussed till now in one go
+
+--
+
+
+```r
+fspaceNew &lt;- fspace |&gt; 
+  select(year, country, ggdy, fxsovsh, xtdebty) |&gt; 
+  mutate(log_ggdy = log(ggdy)) |&gt; 
+  filter(log_ggdy &gt; 5)
+glimpse(fspaceNew)
+```
+
+```
+## Rows: 174
+## Columns: 6
+## $ year     &lt;dbl&gt; 2020, 2021, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2…
+## $ country  &lt;chr&gt; "Italy", "Italy", "Japan", "Japan", "Japan", "Japan", "Japan"…
+## $ ggdy     &lt;dbl&gt; 154.890, 149.809, 154.096, 160.021, 169.490, 174.594, 174.142…
+## $ fxsovsh  &lt;dbl&gt; 0.1160312, 0.1195998, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+## $ xtdebty  &lt;dbl&gt; 149.98938, 131.50735, NA, 29.96744, 31.82130, 31.48246, 32.87…
+## $ log_ggdy &lt;dbl&gt; 5.042715, 5.009361, 5.037576, 5.075305, 5.132794, 5.162463, 5…
+```
+
+
+
+
+
+
+
+
 
 
 
