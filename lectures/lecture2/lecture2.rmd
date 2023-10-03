@@ -1,0 +1,726 @@
+---
+title: "Introduction to R"
+subtitle: "Lecture 2: Introduction to `tidy` Environment"
+author: "Swapnil Singh"
+date: "Lietuvos Bankas | [Course Link](https://github.com/swapnil1987/lb-introduction-to-r)" 
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{css, echo=FALSE}
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+```
+
+```{css, echo=FALSE}
+.center-fit {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  max-height: 10%;
+}
+```
+
+
+```{r setup, include=FALSE}
+# xaringanExtra::use_scribble() ## Draw on slides. Requires dev version of xaringanExtra.
+
+
+options(htmltools.dir.version = FALSE)
+library(knitr)
+opts_chunk$set(
+   fig.asp = 9/16,
+  fig.align = 'center',
+  echo = F,
+  out.width = "95%",
+  dpi= 300
+  )
+
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE,results='hide')
+
+Sys.setenv(lang='en')
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+library(tidyverse)
+library(hrbrthemes)
+library(fontawesome)
+library(tidyverse)
+library(ggtext)
+library(lubridate)
+library(here)
+library(magick)
+library(gapminder)
+```
+
+
+
+# Lecture's Objectives
+
+1. Quick overview of how to transform the data
+    -  operation on `rows`
+    -  operation on `columns`
+    -  operation `==` verbs
+2. Learn about `pipes`
+    -  Concatenation of verbs through pipes
+3. How to work with `groups`
+
+---
+
+# Illustrative Data
+
+- We are going to use the `gapminder` data
+
+```{r, cache=TRUE, include=TRUE, results='markup'}
+
+head(gapminder)
+colnames(gapminder)
+nrow(gapminder)
+
+```
+
+---
+
+# Illustrative Data
+
+- We are going to use the `gapminder` data
+
+```{r, cache=TRUE, include=TRUE, results='markup'}
+glimpse(gapminder)
+```
+
+- Notice the difference between `head` and `glimpse`
+
+---
+
+# Difference: _tibble_ and _dataframe_
+
+- `tibbles` are special types  of data frame
+- Main differences
+    1. tibbles are designed for large datasets
+    2. tibble prints are concise: only few rows and only those columns that fit the screen
+- To view the full dataset:
+    - `View(gapminder)`: interactive dataviewer
+    - `print(gapminder, width = Inf)`: show all  columns
+- **Recommendation**
+    -  Use the combination of `glimpse()` and `View()` functions
+    
+
+
+---
+
+# Data transformation using `dplyr`
+
+- To transform data, you have to rely on `dplyr` package's functions
+- Automatically loads  with command `library(tidyverse)`
+- Huge repository of functions
+```{r, cache=TRUE, include=TRUE, results='markup'}
+
+#number of functions in dplyr package
+funcsDplyr <- ls('package:dplyr')  #note the package has to be loaded first
+numFuncsDplyr  <- length(funcsDplyr)
+numFuncsDplyr
+
+#first twenty functions
+print(funcsDplyr[1:20])
+
+```
+
+---
+
+# Data transformation using `dplyr`
+    
+- Each function in `dplyr` perform a **single** task
+- Data transformation requires multiple task
+- Single task $\rightarrow$ multiple task: use `pipes` i.e. `|>`
+- An inscrutable example at this moment
+
+```{r, echo=TRUE, eval=TRUE, cache=TRUE, results='markup'}
+newGapminder <- gapminder |> 
+  
+  # keep only Asian continent
+  filter(continent == "Asia") |> 
+  
+  # life  expectancy > 70
+  filter(lifeExp > 70)
+```
+
+--
+
+```{r, echo=TRUE, eval=TRUE, cache=TRUE, results='markup'}
+glimpse(newGapminder)
+```
+
+---
+
+# Organization of dplyr functions
+
+-  Functions can be broadly classified as
+    - `row`  functions
+    - `column` functions
+    - `group` functions
+    - `tables` functions
+-  This course we mostly cover the first three
+- Let's  deal them one by one
+
+
+---
+
+# Row functions: _filter_
+
+- `filter`
+    - keep only rows satisfying certain criteria
+    
+```{r, echo=TRUE, eval=FALSE, results='markup', cache=TRUE}
+
+#keep only those observation with gdp per capital greater thann 1000
+newGapminder <-  gapminder |> 
+  filter(lifeExp > 1000)
+```
+
+- Operations
+    - _>_ greater than
+    - _>=_ greater than or equal to
+    - < less than
+    - <=  less than or equal  to
+    - == equal to
+    - != not equal to
+
+- Combination: 
+    - `&` and
+    - `|` or
+
+---
+
+
+# Row functions: _filter_
+
+```{r, echo=TRUE, eval=TRUE, results='markup'}
+
+ gapminder |> 
+  
+  # focus only on Asian countries with life expectancy greater than 70
+  filter(lifeExp > 70 & continent=='Asia') |> 
+  
+  #focus  only on countries with per capita GDP greater than 2000
+  filter(gdpPercap > 2000)
+  
+  
+
+```
+
+
+---
+
+# Row functions: _filter_
+
+- Use `%in%` when combining `|` and `==`
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  filter(country == 'Afghanistan' | country == 'Mali' )
+
+```
+
+
+
+---
+
+# Row functions: _filter_
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  filter(country %in% c('Afghanistan', 'Mali') )
+
+```
+
+
+---
+
+# Row functions: _filter_
+
+- When filtering, `dplyr::filter` operates on `gapminder` and prints the final results
+- `gapminder` data by itself is untouched
+- You can store the result in the new `dataframe`
+
+```{r, cache=TRUE, results='markup'}
+newGapminder <-  gapminder |> 
+  
+  filter(country %in% c('Afghanistan', 'Mali') )
+
+newGapminder
+```
+
+
+---
+
+
+# Row functions: _arrange_
+
+- Change  the ordering of rows based on the value of column(s)
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  arrange(year, gdpPercap) 
+```
+
+---
+
+
+# Row functions: _arrange_
+
+
+- Use `desc` within `arrange` for sorting from largest to smallest
+    - Caveat: can use only one argument
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  arrange(desc( gdpPercap)) 
+```
+
+
+---
+
+# Row functions: _distinct_
+
+- _distinct_ searches and keeps all unique  rows in a dataset
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  distinct()
+```
+
+
+---
+
+# Row functions: _distinct_
+
+- _distinct_ on it own is not very useful
+- When we want to keep _distinct_ combination of some variables, it is very useful
+
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  distinct(year) |> 
+  head(n=4)
+```
+
+
+---
+
+# Row functions: _distinct_
+
+
+- Note that only `year` column is kept
+- To rectify, use `.keep_all = TRUE`
+
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  distinct(year, .keep_all = TRUE) |> 
+  head(n=4)
+```
+
+
+---
+
+# Column functions: _mutate_
+- _mutate_ helps add new columns using existing columns
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  mutate(logGdpPerCapita = log(gdpPercap))
+
+```
+
+
+
+---
+
+# Column functions: _mutate_
+
+- Imagine you have a dataset of `500` columns
+- You do a `mutate` and then `View` it
+- By default new column is added  to the last
+- Use `.before` to put the new column first
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  mutate(logGdpPerCapita = log(gdpPercap), .before=1)
+
+```
+
+---
+
+# Column functions: _mutate_
+
+-  Can use `.after` also
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  mutate(logGdpPerCapita = log(gdpPercap), .after=year)
+
+```
+
+---
+
+# Column functions: _select_
+
+- Select columns by name
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  select(country,year, lifeExp)
+```
+
+
+---
+
+
+# Column functions: _select_
+
+```{r, cache=TRUE, results='markup'}
+colnames(gapminder)
+
+# select columns between country and pop, inclusive
+# don't recommend this though
+gapminder |> 
+  select(country:pop)
+
+```
+
+---
+
+# Column functions: _select_
+
+- Select based on column characteristics
+
+```{r, cache=TRUE, results='markup'}
+
+# select only numeric columns
+gapminder |> 
+  select(where(is.numeric))
+```
+
+
+---
+
+# Column functions: _select_
+
+- select columns which starts with some patterns
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  select(starts_with('co'))
+
+```
+
+---
+
+# Column  functions: _select_
+
+- select columns which ends with some patterns
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  select(ends_with('p'))
+
+```
+
+---
+
+# Column functions: _select_
+
+- select columns which contains some patterns
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  select(contains('t'))
+
+```
+
+---
+
+# Column functions: _rename_
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  rename(life_expectancy = lifeExp)
+
+```
+
+---
+
+#  Combination of _pipes_
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  # keep only Asian continent
+  filter(continent == "Asia") |> 
+  #select some columns 
+  select(country, lifeExp, year) |> 
+  #take the log of lifeExp
+  mutate(logLifeExp = log(lifeExp), .after=lifeExp)
+
+```
+
+
+---
+
+# Working with _groups_
+
+- We learned how to use functions for _rows_ or _columns_
+- What can we do, if we want to operate these functions within _groups_?
+    - Which country has highest life expectancy in **Asia**?
+    - Which country has lowest life expectancy in **Africa**?
+- We use  `group_by()` function
+
+```{r, cache=TRUE, results='markup'}
+gapminder |> 
+  group_by(continent) 
+
+```
+
+
+---
+
+# Working with _groups_
+
+- Once you  used `group_by()`, any row operations are applicable within each group
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  group_by(continent) |> 
+  summarize(avgLifeExp = mean(lifeExp, na.rm = TRUE))
+
+```
+
+---
+--- 
+
+# Working with _groups_
+
+-  More elaborate summary
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  group_by(continent) |> 
+  summarize(avgLifeExp = mean(lifeExp, na.rm = TRUE),
+            medianLifeExp = median(lifeExp, na.rm=TRUE),
+            numObs = n(),
+            avgGdpPerCap = mean(gdpPercap, na.rm = TRUE))
+
+
+```
+
+
+---
+
+# Multiple _groups_
+
+-  Nothing stops you from using multiple groups
+
+```{r, cache=TRUE, results='markup'}
+
+gapminder |> 
+  group_by(continent, year)
+
+```
+
+
+
+
+
+
+
+---
+
+class: inverse, center, middle
+name: practice
+
+#  Coding Exercise
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Download World Bank's Fiscal Space data: [link](https://www.worldbank.org/en/research/brief/fiscal-space)
+- Unzip it and put  it in  folder where you can access it 
+- Download  both `STATA` and `Excel` files 
+    -  `Excel` file has glossary
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspace <- haven::read_dta(file = paste0('raw_data/', 'Fiscal-space-data.dta'))
+
+glimpse(fspace)
+
+```
+
+---
+
+# World Bank Fiscal Space Data
+
+- Count the number of countries in each year and store it in a `dataframe` called  `fspaceNumCountries`
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNumCountries <-  fspace |> 
+  group_by(year) |> 
+  summarize(numCountries  = n())
+
+fspaceNumCountries
+
+```
+
+
+---
+
+# World  Bank Fiscal Space Data
+
+- Compute the mean and median of following variables each year
+    - general government gross debt (`ggdy`)
+    - general government debt in foreign currency (`fxsovsh`)
+    - total external debt in stocks (`xtdebty`)
+    
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceSummary <- fspace |> 
+  group_by(year) |> 
+  summarise(numCountries = n(),
+            mean_ggdy = mean(ggdy, na.rm=TRUE),
+            mean_fxsovsh = mean(fxsovsh, na.rm=TRUE),
+            mean_xtdebty = mean(xtdebty, na.rm=TRUE),
+            median_ggdy = median(ggdy, na.rm=TRUE),
+            median_fxsovsh = median(fxsovsh, na.rm=TRUE),
+            median_xtdebty = median(xtdebty, na.rm=TRUE))
+
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+```{r, cache=TRUE, results='markup'}
+
+glimpse(fspaceSummary)
+
+```
+
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Construct a new dataset which contains following variables
+    - `year`
+    - `country`
+    - `ggdy`
+    - `fxsovsh`
+    - `xtdebty`
+    
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspace |> 
+  select(year, country, ggdy, fxsovsh, xtdebty)
+glimpse(fspaceNew)
+
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Construct  a new variable which is the logarithm of `ggdy`
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspaceNew |> 
+  mutate(log_ggdy = log(ggdy))
+
+glimpse(fspaceNew)
+
+```
+
+
+---
+
+#  World Bank Fiscal Space Data
+
+- Keep only those observations where `log_ggdy > 5`
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspaceNew |> 
+  filter(log_ggdy > 5)
+
+glimpse(fspaceNew)
+
+```
+
+
+---
+
+# World Bank Fiscal Space Data
+
+- Do all operations we discussed till now in one go
+
+--
+
+```{r, cache=TRUE, results='markup'}
+
+fspaceNew <- fspace |> 
+  select(year, country, ggdy, fxsovsh, xtdebty) |> 
+  mutate(log_ggdy = log(ggdy)) |> 
+  filter(log_ggdy > 5)
+glimpse(fspaceNew)
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r gen_pdf, include = FALSE, cache = FALSE, eval = TRUE}
+infile = list.files(pattern = '.html')
+pagedown::chrome_print(input = infile, timeout = 100)
+```
