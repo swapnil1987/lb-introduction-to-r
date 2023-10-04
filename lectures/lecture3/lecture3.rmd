@@ -1,0 +1,615 @@
+---
+title: "Introduction to R"
+subtitle: "Lecture 3: Data Visualization"
+author: "Swapnil Singh"
+date: "Lietuvos Bankas | [Course Link](https://github.com/swapnil1987/lb-introduction-to-r)" 
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{css, echo=FALSE}
+
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+
+```
+
+```{css, echo=FALSE}
+
+.center-fit {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  max-height: 10%;
+}
+
+
+```
+
+
+```{r setup, include=FALSE}
+# xaringanExtra::use_scribble() ## Draw on slides. Requires dev version of xaringanExtra.
+
+
+options(htmltools.dir.version = FALSE)
+library(knitr)
+opts_chunk$set(
+   fig.asp = 9/16,
+  fig.align = 'center',
+  echo = F,
+  out.width = "95%",
+  dpi= 300
+  )
+
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE,results='markup', cache = TRUE, 
+                      warning = FALSE, message = FALSE)
+
+Sys.setenv(lang='en')
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+library(tidyverse)
+library(hrbrthemes)
+library(fontawesome)
+library(tidyverse)
+library(ggtext)
+library(lubridate)
+library(here)
+library(magick)
+library(gapminder)
+library(viridis)
+library(palmerpenguins)
+library(ggExtra)
+library(janitor)
+library(DBI)
+library(dbplyr)
+library(duckdb)
+
+
+```
+
+
+
+---
+
+class: inverse, center, middle
+name: bubble
+
+# Basic Visualization
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+
+---
+
+
+# Why we need visualization?
+
+- Imagine how different painters have drawn trees:
+    - [Picasso](https://en.wikipedia.org/wiki/File:Pablo_Picasso,_1907-08,_Two_Trees_%28Les_Arbres%29,_watercolor_on_paper,_47.9_x_62.7_cm,_Philadelphia_Museum_of_Art.jpg)
+    - [Monet](https://eclecticlight.co/2015/12/03/trees-in-the-landscape-8-claude-monet-and-his-poplar-series/)
+    - [Mondrian](https://www.tate.org.uk/art/artworks/mondrian-the-tree-a-t02211)
+    - [Kasiulis](https://artsandculture.google.com/asset/trees-by-the-river-vytautas-kasiulis-1918%E2%80%931995/ZwHhMuE3blBnCA?hl=en)
+    
+- Paintings convey
+  - information
+  - perspective of a painter
+
+- Same is with data visualization
+  - convey information in a concise manner
+  - provide a perspective to look at the data
+  
+
+---
+
+# What we will do in this class?
+
+- Basics, nitty-gritty details of visualization
+    - understand which type  of plot to use for different questions
+    - understand different concepts within each plot
+- Learn how `ggplot` helps us to visualize and convey information
+    - create **presentable** graphics 
+    
+
+---
+
+# Distributions
+
+- When we want to understand only one variable, we look at the distribution
+- Variables can be of two types:
+    - discrete or categorical (take only few values)
+        - Ex: gender, number of children in the household, ...
+    - numerical or continuous (take many values)
+        - Ex: age, population of different cities, GDP growth rate,...
+        
+---
+
+# Distribution: Discrete Variable
+
+- To visualize the distribution of a discrete variable, use `bar` chart
+- For instance, in `penguins` data, we might be interested in the distribution of 
+  penguin species
+
+```{r, echo = TRUE, eval = FALSE}
+ggplot(penguins, aes(x= species)) +
+  geom_bar()
+
+```
+
+---
+
+# Distribution: Discrete Variable
+
+- To visualize the distribution of a discrete variable, use `bar` chart
+- For instance, in `penguins` data, we might be interested in the distribution of 
+  penguin species
+
+```{r, echo = FALSE, eval = TRUE}
+ggplot(penguins, aes(x= species)) +
+  geom_bar()
+
+```
+
+---
+
+# Distribution: Continuous Variable
+
+- For continuous variables we can use `histogram`
+
+```{r, echo=TRUE, eval=TRUE}
+
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth=10)
+
+```
+
+---
+
+# Distribution: Continuous Variable
+
+- For continuous variables we can use `histogram`
+
+```{r, echo=TRUE, eval=TRUE}
+
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth=100)
+
+```
+
+
+---
+
+# Distribution: Continuous Variable
+
+- You can also use `density` which is just a smoothed histogram
+
+```{r, echo=TRUE, eval=TRUE}
+
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_density()
+
+```
+
+---
+
+# Relationship between two variables
+
+- Two variables can be 
+    - continuous and discrete
+    - discrete and discrete
+    - continuous and continuous
+
+---
+
+# Continuous and Discrete
+
+- Distribution of body mass by species of penguins
+
+```{r}
+
+ggplot(data = penguins, aes(x = species, y = body_mass_g)) +
+  geom_boxplot()
+
+```
+
+
+---
+
+# Continuous and Discrete
+- Distribution of body mass by species of penguins
+```{r}
+
+ggplot(data = penguins, aes( x = body_mass_g, color=species)) +
+  geom_density()
+
+```
+
+
+---
+
+# Two Discrete Variables
+
+- Distribution of species across island: stacked bar plot
+```{r}
+ggplot(data = penguins, aes(x = island, fill=species)) +
+  geom_bar()
+
+```
+
+
+---
+
+# Two Discrete Variables
+
+- Distribution of species across island: side by side bar plot
+
+```{r}
+ggplot(data = penguins, aes(x = island, fill=species)) +
+  geom_bar(position = 'dodge')
+
+```
+
+
+---
+
+# Two continuous variables
+
+- From the last class
+
+```{r, echo = FALSE, cache=TRUE, warning=FALSE, message=FALSE, eval=TRUE}
+p <-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+  
+  #modern theme
+  theme_modern_rc() +
+  
+  labs(
+    title = "Penguins: relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  )
+
+p
+```
+
+
+---
+
+# Two continuous variables
+
+- From the last class (conditional on island)
+
+```{r, echo = TRUE, cache=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+p <-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+  
+  #conditional on island
+  facet_wrap(~island) +
+  
+  #modern theme
+  theme_modern_rc() +
+  
+  labs(
+    title = "Penguins: relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  )
+
+p
+```
+
+---
+
+# Two continuous variables
+
+- From the last class (conditional on island)
+
+```{r, echo = FALSE, cache=TRUE, warning=FALSE, message=FALSE, eval=TRUE}
+p <-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+  
+  #conditional on island
+  facet_wrap(~island) +
+  
+  #modern theme
+  theme_modern_rc() +
+  
+  labs(
+    title = "Penguins: relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  )
+
+p
+```
+
+
+---
+
+class: inverse, center, middle
+name: marginal
+
+# Marginal Distributions
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+---
+
+# Marginal Distributions
+
+```{r, echo=FALSE}
+
+p <- ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g)) +
+      
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+
+  #modern theme
+  theme_bw() +
+  
+  labs(
+    title = "Relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  ) +
+  theme(legend.position = 'none')
+
+ 
+# with marginal histogram
+p1 <- ggMarginal(p, type="histogram")
+p1
+
+```
+
+
+---
+
+
+# Marginal Distributions
+
+```{r, echo=TRUE, eval=FALSE}
+
+p <- ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g)) +
+      
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+
+  #modern theme
+  theme_bw() +
+  
+  labs(
+    title = "Relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  ) +
+  
+  theme(legend.position = 'none')
+
+```
+
+---
+
+# Marginal Distributions
+
+
+```{r, echo=TRUE, eval=TRUE}
+
+# with marginal histogram
+p1 <- ggMarginal(p, type="histogram")
+p1
+
+
+```
+
+---
+
+# Marginal Distributions
+
+```{r}
+
+# with marginal histogram
+p2 <- ggMarginal(p, type="histogram", fill='red')
+p2
+
+```
+
+
+---
+
+class: inverse, center, middle
+name: data-import
+
+# Importing  Data in R
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+---
+
+# Reading csv files
+
+- Comma separated value (CSV) files are most common
+- Command is: `read_csv`
+
+```{r}
+cleanFuelData <- read_csv(file = 'raw_data/clean-fuel-data.csv')
+glimpse(cleanFuelData)
+```
+
+---
+
+# Reading csv files
+
+- How to make sure that `..` is recognized as missing
+
+```{r}
+cleanFuelData <- read_csv(file = 'raw_data/clean-fuel-data.csv',
+                          na = c('..'))
+glimpse(cleanFuelData)
+```
+
+---
+
+# Reading csv files
+- Now look at variable names like country name or country code
+    - surrounded by backticks. Why?
+        - space between names
+- we need to clean up in a cumbersome way
+
+```{r}
+cleanFuelData <- read_csv(file = 'raw_data/clean-fuel-data.csv',
+                          na = c('..')) |> 
+  rename(country_name = `Country Name`,
+         country_code = `Country Code`)
+
+```
+
+---
+
+# Reading csv files
+- Alternative way to clean variable names: use `janitor` package
+```{r}
+cleanFuelData <- read_csv(file = 'raw_data/clean-fuel-data.csv',
+                          na = c('..')) |> 
+  janitor::clean_names()
+glimpse(cleanFuelData)
+```
+
+
+---
+
+# Importing from Databases
+
+- CSV or Excel are not always available
+- Sometimes, you have to access `databases`
+- We need to learn two things then
+    - `DBI` package
+    - `dbplyr` package
+- `DBI` package connects you to a database
+- `dbplyr` converts `dplyr` code to `SQL` 
+
+
+---
+
+# What is a database?
+
+- Think of database as a bunch of `dataframes`
+- These `dataframes` are also called `tables`
+    - there are some difference between `dataframe` and `table` but not important for this class
+- Databases are run by database management systems (DBMS)
+- Three types of DBMS
+    1. Client server
+    2. Cloud
+    3. In-process
+
+
+---
+
+# How it works? Big Picture
+
+- There are two steps involved:
+    1. use `DBI` to connect to the database and perform simple functions
+    2. Depending on the DBMS, you will need specific package
+        - `RPostgres` for `PostgreSQL`
+        - `RMariaDB` for `MySQL`
+- For this class we will use in-house `duckdb`
+    - difference between `duckdb` and other DBMS is only how you connect to it
+    - everything else is essentially the same
+    
+---
+
+# Working with duckdb
+
+```{r}
+#create empty database
+con <- dbConnect(duckdb(), dbdir='chapter3_db')
+
+# add some data to it
+dbWriteTable(con, "penguins", palmerpenguins::penguins, overwrite=TRUE)
+dbWriteTable(con, "penguins_raw", palmerpenguins::penguins_raw, overwrite=TRUE)
+dbWriteTable(con, "diamonds", ggplot2::diamonds, overwrite=TRUE)
+
+#now check which tables are in the database
+dbListTables(con)
+
+# pull one of the tables
+con |> dbReadTable('penguins') 
+```
+
+
+---
+
+# Introducing dbplyr
+
+```{r}
+con <- dbConnect(duckdb(), dbdir='chapter3_db')
+
+# add some data to it
+dbWriteTable(con, "penguins", palmerpenguins::penguins, overwrite=TRUE)
+dbWriteTable(con, "penguins_raw", palmerpenguins::penguins_raw, overwrite=TRUE)
+dbWriteTable(con, "diamonds", ggplot2::diamonds, overwrite=TRUE)
+
+penguins_db <- tbl(con, 'penguins')
+penguins_db
+```
+
+
+
+
+```{r gen_pdf, include = FALSE, cache = FALSE, eval = TRUE}
+infile = list.files(pattern = '.html')
+pagedown::chrome_print(input = infile, timeout = 100)
+```
+
+
