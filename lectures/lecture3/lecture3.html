@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Swapnil Singh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introduction to R
+]
+.subtitle[
+## Lecture 3: Data Visualization
+]
+.author[
+### Swapnil Singh
+]
+.date[
+### Lietuvos Bankas | <a href="https://github.com/swapnil1987/lb-introduction-to-r">Course Link</a>
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+
+.center-fit {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  max-height: 10%;
+}
+
+
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+class: inverse, center, middle
+name: bubble
+
+# Basic Visualization
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+
+---
+
+
+# Why we need visualization?
+
+- Imagine how different painters have drawn trees:
+    - [Picasso](https://en.wikipedia.org/wiki/File:Pablo_Picasso,_1907-08,_Two_Trees_%28Les_Arbres%29,_watercolor_on_paper,_47.9_x_62.7_cm,_Philadelphia_Museum_of_Art.jpg)
+    - [Monet](https://eclecticlight.co/2015/12/03/trees-in-the-landscape-8-claude-monet-and-his-poplar-series/)
+    - [Mondrian](https://www.tate.org.uk/art/artworks/mondrian-the-tree-a-t02211)
+    - [Kasiulis](https://artsandculture.google.com/asset/trees-by-the-river-vytautas-kasiulis-1918%E2%80%931995/ZwHhMuE3blBnCA?hl=en)
+    
+- Paintings convey
+  - information
+  - perspective of a painter
+
+- Same is with data visualization
+  - convey information in a concise manner
+  - provide a perspective to look at the data
+  
+
+---
+
+# What we will do in this class?
+
+- Basics, nitty-gritty details of visualization
+    - understand which type  of plot to use for different questions
+    - understand different concepts within each plot
+- Learn how `ggplot` helps us to visualize and convey information
+    - create **presentable** graphics 
+    
+
+---
+
+# Distributions
+
+- When we want to understand only one variable, we look at the distribution
+- Variables can be of two types:
+    - discrete or categorical (take only few values)
+        - Ex: gender, number of children in the household, ...
+    - numerical or continuous (take many values)
+        - Ex: age, population of different cities, GDP growth rate,...
+        
+---
+
+# Distribution: Discrete Variable
+
+- To visualize the distribution of a discrete variable, use `bar` chart
+- For instance, in `penguins` data, we might be interested in the distribution of 
+  penguin species
+
+
+```r
+ggplot(penguins, aes(x= species)) +
+  geom_bar()
+```
+
+---
+
+# Distribution: Discrete Variable
+
+- To visualize the distribution of a discrete variable, use `bar` chart
+- For instance, in `penguins` data, we might be interested in the distribution of 
+  penguin species
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-4-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Distribution: Continuous Variable
+
+- For continuous variables we can use `histogram`
+
+
+```r
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth=10)
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-5-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Distribution: Continuous Variable
+
+- For continuous variables we can use `histogram`
+
+
+```r
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth=100)
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-6-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Distribution: Continuous Variable
+
+- You can also use `density` which is just a smoothed histogram
+
+
+```r
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_density()
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-7-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Relationship between two variables
+
+- Two variables can be 
+    - continuous and discrete
+    - discrete and discrete
+    - continuous and continuous
+
+---
+
+# Continuous and Discrete
+
+- Distribution of body mass by species of penguins
+
+
+```r
+ggplot(data = penguins, aes(x = species, y = body_mass_g)) +
+  geom_boxplot()
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-8-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Continuous and Discrete
+- Distribution of body mass by species of penguins
+
+```r
+ggplot(data = penguins, aes( x = body_mass_g, color=species)) +
+  geom_density()
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-9-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Two Discrete Variables
+
+- Distribution of species across island: stacked bar plot
+
+```r
+ggplot(data = penguins, aes(x = island, fill=species)) +
+  geom_bar()
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-10-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Two Discrete Variables
+
+- Distribution of species across island: side by side bar plot
+
+
+```r
+ggplot(data = penguins, aes(x = island, fill=species)) +
+  geom_bar(position = 'dodge')
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-11-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Two continuous variables
+
+- From the last class
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-12-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Two continuous variables
+
+- From the last class (conditional on island)
+
+
+```r
+p &lt;-  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  
+  
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+  
+  #conditional on island
+  facet_wrap(~island) +
+  
+  #modern theme
+  theme_modern_rc() +
+  
+  labs(
+    title = "Penguins: relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  )
+
+p
+```
+
+---
+
+# Two continuous variables
+
+- From the last class (conditional on island)
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-14-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: inverse, center, middle
+name: marginal
+
+# Marginal Distributions
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+# Marginal Distributions
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-15-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+# Marginal Distributions
+
+
+```r
+p &lt;- ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g)) +
+      
+  # notice how `aes` for geom_point shifted from above to here
+  geom_point(mapping = aes(color=species, shape=species)) +
+  
+  
+  #add linear fit (one line across all three groups)
+  geom_smooth(method='lm')  +
+
+  #modern theme
+  theme_bw() +
+  
+  labs(
+    title = "Relationship between body mass and flipper length",
+    subtitle = "Adelie, Chinstrap, and Gentoo Penguins",
+    x = "flipper length in millimeters",
+    y = "body mass in grams",
+    color = "species",
+    shape = "species"
+  ) +
+  
+  theme(legend.position = 'none')
+```
+
+---
+
+# Marginal Distributions
+
+
+
+```r
+# with marginal histogram
+p1 &lt;- ggMarginal(p, type="histogram")
+p1
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-17-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Marginal Distributions
+
+
+```r
+# with marginal histogram
+p2 &lt;- ggMarginal(p, type="histogram", fill='red')
+p2
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-18-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: inverse, center, middle
+name: data-import
+
+# Importing  Data in R
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+# Reading csv files
+
+- Comma separated value (CSV) files are most common
+- Command is: `read_csv`
+
+
+```r
+cleanFuelData &lt;- read_csv(file = 'raw_data/clean-fuel-data.csv')
+glimpse(cleanFuelData)
+```
+
+```
+## Rows: 271
+## Columns: 67
+## $ `Country Name`  &lt;chr&gt; "Afghanistan", "Albania", "Algeria", "American Samoa",…
+## $ `Country Code`  &lt;chr&gt; "AFG", "ALB", "DZA", "ASM", "AND", "AGO", "ATG", "ARG"…
+## $ `Series Name`   &lt;chr&gt; "Access to clean fuels and technologies for cooking (%…
+## $ `Series Code`   &lt;chr&gt; "EG.CFT.ACCS.ZS", "EG.CFT.ACCS.ZS", "EG.CFT.ACCS.ZS", …
+## $ `1960 [YR1960]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1961 [YR1961]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1962 [YR1962]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1963 [YR1963]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1964 [YR1964]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1965 [YR1965]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1966 [YR1966]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1967 [YR1967]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1968 [YR1968]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1969 [YR1969]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1970 [YR1970]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1971 [YR1971]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1972 [YR1972]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1973 [YR1973]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1974 [YR1974]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1975 [YR1975]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1976 [YR1976]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1977 [YR1977]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1978 [YR1978]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1979 [YR1979]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1980 [YR1980]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1981 [YR1981]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1982 [YR1982]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1983 [YR1983]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1984 [YR1984]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1985 [YR1985]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1986 [YR1986]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1987 [YR1987]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1988 [YR1988]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1989 [YR1989]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1990 [YR1990]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1991 [YR1991]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1992 [YR1992]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1993 [YR1993]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1994 [YR1994]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1995 [YR1995]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1996 [YR1996]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1997 [YR1997]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1998 [YR1998]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `1999 [YR1999]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+## $ `2000 [YR2000]` &lt;chr&gt; "6.7", "38.7", "96.9", "..", "100", "40.1", "100", "95…
+## $ `2001 [YR2001]` &lt;chr&gt; "7.7", "41", "97.3", "..", "100", "40.7", "100", "96.3…
+## $ `2002 [YR2002]` &lt;chr&gt; "8.8", "43.8", "97.6", "..", "100", "41.2", "100", "96…
+## $ `2003 [YR2003]` &lt;chr&gt; "10", "46.5", "97.9", "..", "100", "41.5", "100", "97.…
+## $ `2004 [YR2004]` &lt;chr&gt; "11.1", "49.2", "98.2", "..", "100", "42.2", "100", "9…
+## $ `2005 [YR2005]` &lt;chr&gt; "12.5", "52", "98.4", "..", "100", "42.6", "100", "98"…
+## $ `2006 [YR2006]` &lt;chr&gt; "13.9", "54.8", "98.6", "..", "100", "42.9", "100", "9…
+## $ `2007 [YR2007]` &lt;chr&gt; "15.3", "57.8", "98.8", "..", "100", "43.3", "100", "9…
+## $ `2008 [YR2008]` &lt;chr&gt; "16.8", "60.7", "99", "..", "100", "43.8", "100", "98.…
+## $ `2009 [YR2009]` &lt;chr&gt; "18.2", "63.1", "99.1", "..", "100", "44.1", "100", "9…
+## $ `2010 [YR2010]` &lt;chr&gt; "19.7", "65.8", "99.2", "..", "100", "44.7", "100", "9…
+## $ `2011 [YR2011]` &lt;chr&gt; "21.3", "68.1", "99.3", "..", "100", "45.2", "100", "9…
+## $ `2012 [YR2012]` &lt;chr&gt; "22.7", "70.4", "99.4", "..", "100", "45.8", "100", "9…
+## $ `2013 [YR2013]` &lt;chr&gt; "24.3", "72.3", "99.4", "..", "100", "46.1", "100", "9…
+## $ `2014 [YR2014]` &lt;chr&gt; "25.7", "74.4", "99.5", "..", "100", "46.7", "100", "9…
+## $ `2015 [YR2015]` &lt;chr&gt; "27.25", "76.1", "99.6", "..", "100", "47.4", "100", "…
+## $ `2016 [YR2016]` &lt;chr&gt; "28.5", "77.6", "99.6", "..", "100", "47.8", "100", "9…
+## $ `2017 [YR2017]` &lt;chr&gt; "30", "79", "99.6", "..", "100", "48.3", "100", "99.8"…
+## $ `2018 [YR2018]` &lt;chr&gt; "31.1", "80.2", "99.6", "..", "100", "48.7", "100", "9…
+## $ `2019 [YR2019]` &lt;chr&gt; "32.45", "81.6", "99.7", "..", "100", "49.3", "100", "…
+## $ `2020 [YR2020]` &lt;chr&gt; "33.8", "82.7", "99.7", "..", "100", "49.7", "100", "9…
+## $ `2021 [YR2021]` &lt;chr&gt; "35.4", "83.7", "99.7", "..", "100", "50", "100", "99.…
+## $ `2022 [YR2022]` &lt;chr&gt; "..", "..", "..", "..", "..", "..", "..", "..", "..", …
+```
+
+---
+
+# Reading csv files
+
+- How to make sure that `..` is recognized as missing
+
+
+```r
+cleanFuelData &lt;- read_csv(file = 'raw_data/clean-fuel-data.csv',
+                          na = c('..'))
+glimpse(cleanFuelData)
+```
+
+```
+## Rows: 271
+## Columns: 67
+## $ `Country Name`  &lt;chr&gt; "Afghanistan", "Albania", "Algeria", "American Samoa",…
+## $ `Country Code`  &lt;chr&gt; "AFG", "ALB", "DZA", "ASM", "AND", "AGO", "ATG", "ARG"…
+## $ `Series Name`   &lt;chr&gt; "Access to clean fuels and technologies for cooking (%…
+## $ `Series Code`   &lt;chr&gt; "EG.CFT.ACCS.ZS", "EG.CFT.ACCS.ZS", "EG.CFT.ACCS.ZS", …
+## $ `1960 [YR1960]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1961 [YR1961]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1962 [YR1962]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1963 [YR1963]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1964 [YR1964]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1965 [YR1965]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1966 [YR1966]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1967 [YR1967]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1968 [YR1968]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1969 [YR1969]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1970 [YR1970]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1971 [YR1971]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1972 [YR1972]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1973 [YR1973]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1974 [YR1974]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1975 [YR1975]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1976 [YR1976]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1977 [YR1977]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1978 [YR1978]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1979 [YR1979]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1980 [YR1980]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1981 [YR1981]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1982 [YR1982]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1983 [YR1983]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1984 [YR1984]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1985 [YR1985]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1986 [YR1986]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1987 [YR1987]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1988 [YR1988]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1989 [YR1989]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1990 [YR1990]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1991 [YR1991]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1992 [YR1992]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1993 [YR1993]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1994 [YR1994]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1995 [YR1995]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1996 [YR1996]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1997 [YR1997]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1998 [YR1998]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `1999 [YR1999]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `2000 [YR2000]` &lt;dbl&gt; 6.7, 38.7, 96.9, NA, 100.0, 40.1, 100.0, 95.8, 80.1, N…
+## $ `2001 [YR2001]` &lt;dbl&gt; 7.7, 41.0, 97.3, NA, 100.0, 40.7, 100.0, 96.3, 82.7, N…
+## $ `2002 [YR2002]` &lt;dbl&gt; 8.8, 43.8, 97.6, NA, 100.0, 41.2, 100.0, 96.8, 85.3, N…
+## $ `2003 [YR2003]` &lt;dbl&gt; 10.00, 46.50, 97.90, NA, 100.00, 41.50, 100.00, 97.20,…
+## $ `2004 [YR2004]` &lt;dbl&gt; 11.1, 49.2, 98.2, NA, 100.0, 42.2, 100.0, 97.6, 89.2, …
+## $ `2005 [YR2005]` &lt;dbl&gt; 12.50, 52.00, 98.40, NA, 100.00, 42.60, 100.00, 98.00,…
+## $ `2006 [YR2006]` &lt;dbl&gt; 13.9, 54.8, 98.6, NA, 100.0, 42.9, 100.0, 98.3, 92.1, …
+## $ `2007 [YR2007]` &lt;dbl&gt; 15.3, 57.8, 98.8, NA, 100.0, 43.3, 100.0, 98.6, 93.3, …
+## $ `2008 [YR2008]` &lt;dbl&gt; 16.8, 60.7, 99.0, NA, 100.0, 43.8, 100.0, 98.9, 94.2, …
+## $ `2009 [YR2009]` &lt;dbl&gt; 18.2, 63.1, 99.1, NA, 100.0, 44.1, 100.0, 99.1, 95.0, …
+## $ `2010 [YR2010]` &lt;dbl&gt; 19.7, 65.8, 99.2, NA, 100.0, 44.7, 100.0, 99.2, 95.6, …
+## $ `2011 [YR2011]` &lt;dbl&gt; 21.30, 68.10, 99.30, NA, 100.00, 45.20, 100.00, 99.40,…
+## $ `2012 [YR2012]` &lt;dbl&gt; 22.7, 70.4, 99.4, NA, 100.0, 45.8, 100.0, 99.5, 96.5, …
+## $ `2013 [YR2013]` &lt;dbl&gt; 24.3, 72.3, 99.4, NA, 100.0, 46.1, 100.0, 99.6, 96.9, …
+## $ `2014 [YR2014]` &lt;dbl&gt; 25.7, 74.4, 99.5, NA, 100.0, 46.7, 100.0, 99.7, 97.3, …
+## $ `2015 [YR2015]` &lt;dbl&gt; 27.25, 76.10, 99.60, NA, 100.00, 47.40, 100.00, 99.80,…
+## $ `2016 [YR2016]` &lt;dbl&gt; 28.50, 77.60, 99.60, NA, 100.00, 47.80, 100.00, 99.80,…
+## $ `2017 [YR2017]` &lt;dbl&gt; 30.0, 79.0, 99.6, NA, 100.0, 48.3, 100.0, 99.8, 97.9, …
+## $ `2018 [YR2018]` &lt;dbl&gt; 31.1, 80.2, 99.6, NA, 100.0, 48.7, 100.0, 99.9, 98.0, …
+## $ `2019 [YR2019]` &lt;dbl&gt; 32.45, 81.60, 99.70, NA, 100.00, 49.30, 100.00, 99.90,…
+## $ `2020 [YR2020]` &lt;dbl&gt; 33.8, 82.7, 99.7, NA, 100.0, 49.7, 100.0, 99.9, 98.2, …
+## $ `2021 [YR2021]` &lt;dbl&gt; 35.40, 83.70, 99.70, NA, 100.00, 50.00, 100.00, 99.90,…
+## $ `2022 [YR2022]` &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+```
+
+---
+
+# Reading csv files
+- Now look at variable names like country name or country code
+    - surrounded by backticks. Why?
+        - space between names
+- we need to clean up in a cumbersome way
+
+
+```r
+cleanFuelData &lt;- read_csv(file = 'raw_data/clean-fuel-data.csv',
+                          na = c('..')) |&gt; 
+  rename(country_name = `Country Name`,
+         country_code = `Country Code`)
+```
+
+---
+
+# Reading csv files
+- Alternative way to clean variable names: use `janitor` package
+
+```r
+cleanFuelData &lt;- read_csv(file = 'raw_data/clean-fuel-data.csv',
+                          na = c('..')) |&gt; 
+  janitor::clean_names()
+glimpse(cleanFuelData)
+```
+
+```
+## Rows: 271
+## Columns: 67
+## $ country_name &lt;chr&gt; "Afghanistan", "Albania", "Algeria", "American Samoa", "A…
+## $ country_code &lt;chr&gt; "AFG", "ALB", "DZA", "ASM", "AND", "AGO", "ATG", "ARG", "…
+## $ series_name  &lt;chr&gt; "Access to clean fuels and technologies for cooking (% of…
+## $ series_code  &lt;chr&gt; "EG.CFT.ACCS.ZS", "EG.CFT.ACCS.ZS", "EG.CFT.ACCS.ZS", "EG…
+## $ x1960_yr1960 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1961_yr1961 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1962_yr1962 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1963_yr1963 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1964_yr1964 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1965_yr1965 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1966_yr1966 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1967_yr1967 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1968_yr1968 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1969_yr1969 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1970_yr1970 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1971_yr1971 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1972_yr1972 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1973_yr1973 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1974_yr1974 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1975_yr1975 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1976_yr1976 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1977_yr1977 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1978_yr1978 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1979_yr1979 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1980_yr1980 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1981_yr1981 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1982_yr1982 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1983_yr1983 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1984_yr1984 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1985_yr1985 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1986_yr1986 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1987_yr1987 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1988_yr1988 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1989_yr1989 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1990_yr1990 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1991_yr1991 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1992_yr1992 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1993_yr1993 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1994_yr1994 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1995_yr1995 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1996_yr1996 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1997_yr1997 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1998_yr1998 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x1999_yr1999 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ x2000_yr2000 &lt;dbl&gt; 6.7, 38.7, 96.9, NA, 100.0, 40.1, 100.0, 95.8, 80.1, NA, …
+## $ x2001_yr2001 &lt;dbl&gt; 7.7, 41.0, 97.3, NA, 100.0, 40.7, 100.0, 96.3, 82.7, NA, …
+## $ x2002_yr2002 &lt;dbl&gt; 8.8, 43.8, 97.6, NA, 100.0, 41.2, 100.0, 96.8, 85.3, NA, …
+## $ x2003_yr2003 &lt;dbl&gt; 10.00, 46.50, 97.90, NA, 100.00, 41.50, 100.00, 97.20, 87…
+## $ x2004_yr2004 &lt;dbl&gt; 11.1, 49.2, 98.2, NA, 100.0, 42.2, 100.0, 97.6, 89.2, NA,…
+## $ x2005_yr2005 &lt;dbl&gt; 12.50, 52.00, 98.40, NA, 100.00, 42.60, 100.00, 98.00, 90…
+## $ x2006_yr2006 &lt;dbl&gt; 13.9, 54.8, 98.6, NA, 100.0, 42.9, 100.0, 98.3, 92.1, NA,…
+## $ x2007_yr2007 &lt;dbl&gt; 15.3, 57.8, 98.8, NA, 100.0, 43.3, 100.0, 98.6, 93.3, NA,…
+## $ x2008_yr2008 &lt;dbl&gt; 16.8, 60.7, 99.0, NA, 100.0, 43.8, 100.0, 98.9, 94.2, NA,…
+## $ x2009_yr2009 &lt;dbl&gt; 18.2, 63.1, 99.1, NA, 100.0, 44.1, 100.0, 99.1, 95.0, NA,…
+## $ x2010_yr2010 &lt;dbl&gt; 19.7, 65.8, 99.2, NA, 100.0, 44.7, 100.0, 99.2, 95.6, NA,…
+## $ x2011_yr2011 &lt;dbl&gt; 21.30, 68.10, 99.30, NA, 100.00, 45.20, 100.00, 99.40, 96…
+## $ x2012_yr2012 &lt;dbl&gt; 22.7, 70.4, 99.4, NA, 100.0, 45.8, 100.0, 99.5, 96.5, NA,…
+## $ x2013_yr2013 &lt;dbl&gt; 24.3, 72.3, 99.4, NA, 100.0, 46.1, 100.0, 99.6, 96.9, NA,…
+## $ x2014_yr2014 &lt;dbl&gt; 25.7, 74.4, 99.5, NA, 100.0, 46.7, 100.0, 99.7, 97.3, NA,…
+## $ x2015_yr2015 &lt;dbl&gt; 27.25, 76.10, 99.60, NA, 100.00, 47.40, 100.00, 99.80, 97…
+## $ x2016_yr2016 &lt;dbl&gt; 28.50, 77.60, 99.60, NA, 100.00, 47.80, 100.00, 99.80, 97…
+## $ x2017_yr2017 &lt;dbl&gt; 30.0, 79.0, 99.6, NA, 100.0, 48.3, 100.0, 99.8, 97.9, NA,…
+## $ x2018_yr2018 &lt;dbl&gt; 31.1, 80.2, 99.6, NA, 100.0, 48.7, 100.0, 99.9, 98.0, NA,…
+## $ x2019_yr2019 &lt;dbl&gt; 32.45, 81.60, 99.70, NA, 100.00, 49.30, 100.00, 99.90, 98…
+## $ x2020_yr2020 &lt;dbl&gt; 33.8, 82.7, 99.7, NA, 100.0, 49.7, 100.0, 99.9, 98.2, NA,…
+## $ x2021_yr2021 &lt;dbl&gt; 35.40, 83.70, 99.70, NA, 100.00, 50.00, 100.00, 99.90, 98…
+## $ x2022_yr2022 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+```
+
+
+---
+
+# Importing from Databases
+
+- CSV or Excel are not always available
+- Sometimes, you have to access `databases`
+- We need to learn two things then
+    - `DBI` package
+    - `dbplyr` package
+- `DBI` package connects you to a database
+- `dbplyr` converts `dplyr` code to `SQL` 
+
+
+---
+
+# What is a database?
+
+- Think of database as a bunch of `dataframes`
+- These `dataframes` are also called `tables`
+    - there are some difference between `dataframe` and `table` but not important for this class
+- Databases are run by database management systems (DBMS)
+- Three types of DBMS
+    1. Client server
+    2. Cloud
+    3. In-process
+
+
+---
+
+# How it works? Big Picture
+
+- There are two steps involved:
+    1. use `DBI` to connect to the database and perform simple functions
+    2. Depending on the DBMS, you will need specific package
+        - `RPostgres` for `PostgreSQL`
+        - `RMariaDB` for `MySQL`
+- For this class we will use in-house `duckdb`
+    - difference between `duckdb` and other DBMS is only how you connect to it
+    - everything else is essentially the same
+    
+---
+
+# Working with duckdb
+
+
+```r
+#create empty database
+con &lt;- dbConnect(duckdb(), dbdir='chapter3_db')
+
+# add some data to it
+dbWriteTable(con, "penguins", palmerpenguins::penguins, overwrite=TRUE)
+dbWriteTable(con, "penguins_raw", palmerpenguins::penguins_raw, overwrite=TRUE)
+dbWriteTable(con, "diamonds", ggplot2::diamonds, overwrite=TRUE)
+
+#now check which tables are in the database
+dbListTables(con)
+```
+
+```
+## [1] "diamonds"     "penguins"     "penguins_raw"
+```
+
+```r
+# pull one of the tables
+con |&gt; dbReadTable('penguins') 
+```
+
+```
+##       species    island bill_length_mm bill_depth_mm flipper_length_mm
+## 1      Adelie Torgersen           39.1          18.7               181
+## 2      Adelie Torgersen           39.5          17.4               186
+## 3      Adelie Torgersen           40.3          18.0               195
+## 4      Adelie Torgersen             NA            NA                NA
+## 5      Adelie Torgersen           36.7          19.3               193
+## 6      Adelie Torgersen           39.3          20.6               190
+## 7      Adelie Torgersen           38.9          17.8               181
+## 8      Adelie Torgersen           39.2          19.6               195
+## 9      Adelie Torgersen           34.1          18.1               193
+## 10     Adelie Torgersen           42.0          20.2               190
+## 11     Adelie Torgersen           37.8          17.1               186
+## 12     Adelie Torgersen           37.8          17.3               180
+## 13     Adelie Torgersen           41.1          17.6               182
+## 14     Adelie Torgersen           38.6          21.2               191
+## 15     Adelie Torgersen           34.6          21.1               198
+## 16     Adelie Torgersen           36.6          17.8               185
+## 17     Adelie Torgersen           38.7          19.0               195
+## 18     Adelie Torgersen           42.5          20.7               197
+## 19     Adelie Torgersen           34.4          18.4               184
+## 20     Adelie Torgersen           46.0          21.5               194
+## 21     Adelie    Biscoe           37.8          18.3               174
+## 22     Adelie    Biscoe           37.7          18.7               180
+## 23     Adelie    Biscoe           35.9          19.2               189
+## 24     Adelie    Biscoe           38.2          18.1               185
+## 25     Adelie    Biscoe           38.8          17.2               180
+## 26     Adelie    Biscoe           35.3          18.9               187
+## 27     Adelie    Biscoe           40.6          18.6               183
+## 28     Adelie    Biscoe           40.5          17.9               187
+## 29     Adelie    Biscoe           37.9          18.6               172
+## 30     Adelie    Biscoe           40.5          18.9               180
+## 31     Adelie     Dream           39.5          16.7               178
+## 32     Adelie     Dream           37.2          18.1               178
+## 33     Adelie     Dream           39.5          17.8               188
+## 34     Adelie     Dream           40.9          18.9               184
+## 35     Adelie     Dream           36.4          17.0               195
+## 36     Adelie     Dream           39.2          21.1               196
+## 37     Adelie     Dream           38.8          20.0               190
+## 38     Adelie     Dream           42.2          18.5               180
+## 39     Adelie     Dream           37.6          19.3               181
+## 40     Adelie     Dream           39.8          19.1               184
+## 41     Adelie     Dream           36.5          18.0               182
+## 42     Adelie     Dream           40.8          18.4               195
+## 43     Adelie     Dream           36.0          18.5               186
+## 44     Adelie     Dream           44.1          19.7               196
+## 45     Adelie     Dream           37.0          16.9               185
+## 46     Adelie     Dream           39.6          18.8               190
+## 47     Adelie     Dream           41.1          19.0               182
+## 48     Adelie     Dream           37.5          18.9               179
+## 49     Adelie     Dream           36.0          17.9               190
+## 50     Adelie     Dream           42.3          21.2               191
+## 51     Adelie    Biscoe           39.6          17.7               186
+## 52     Adelie    Biscoe           40.1          18.9               188
+## 53     Adelie    Biscoe           35.0          17.9               190
+## 54     Adelie    Biscoe           42.0          19.5               200
+## 55     Adelie    Biscoe           34.5          18.1               187
+## 56     Adelie    Biscoe           41.4          18.6               191
+## 57     Adelie    Biscoe           39.0          17.5               186
+## 58     Adelie    Biscoe           40.6          18.8               193
+## 59     Adelie    Biscoe           36.5          16.6               181
+## 60     Adelie    Biscoe           37.6          19.1               194
+## 61     Adelie    Biscoe           35.7          16.9               185
+## 62     Adelie    Biscoe           41.3          21.1               195
+## 63     Adelie    Biscoe           37.6          17.0               185
+## 64     Adelie    Biscoe           41.1          18.2               192
+## 65     Adelie    Biscoe           36.4          17.1               184
+## 66     Adelie    Biscoe           41.6          18.0               192
+## 67     Adelie    Biscoe           35.5          16.2               195
+## 68     Adelie    Biscoe           41.1          19.1               188
+## 69     Adelie Torgersen           35.9          16.6               190
+## 70     Adelie Torgersen           41.8          19.4               198
+## 71     Adelie Torgersen           33.5          19.0               190
+## 72     Adelie Torgersen           39.7          18.4               190
+## 73     Adelie Torgersen           39.6          17.2               196
+## 74     Adelie Torgersen           45.8          18.9               197
+## 75     Adelie Torgersen           35.5          17.5               190
+## 76     Adelie Torgersen           42.8          18.5               195
+## 77     Adelie Torgersen           40.9          16.8               191
+## 78     Adelie Torgersen           37.2          19.4               184
+## 79     Adelie Torgersen           36.2          16.1               187
+## 80     Adelie Torgersen           42.1          19.1               195
+## 81     Adelie Torgersen           34.6          17.2               189
+## 82     Adelie Torgersen           42.9          17.6               196
+## 83     Adelie Torgersen           36.7          18.8               187
+## 84     Adelie Torgersen           35.1          19.4               193
+## 85     Adelie     Dream           37.3          17.8               191
+## 86     Adelie     Dream           41.3          20.3               194
+## 87     Adelie     Dream           36.3          19.5               190
+## 88     Adelie     Dream           36.9          18.6               189
+## 89     Adelie     Dream           38.3          19.2               189
+## 90     Adelie     Dream           38.9          18.8               190
+## 91     Adelie     Dream           35.7          18.0               202
+## 92     Adelie     Dream           41.1          18.1               205
+## 93     Adelie     Dream           34.0          17.1               185
+## 94     Adelie     Dream           39.6          18.1               186
+## 95     Adelie     Dream           36.2          17.3               187
+## 96     Adelie     Dream           40.8          18.9               208
+## 97     Adelie     Dream           38.1          18.6               190
+## 98     Adelie     Dream           40.3          18.5               196
+## 99     Adelie     Dream           33.1          16.1               178
+## 100    Adelie     Dream           43.2          18.5               192
+## 101    Adelie    Biscoe           35.0          17.9               192
+## 102    Adelie    Biscoe           41.0          20.0               203
+## 103    Adelie    Biscoe           37.7          16.0               183
+## 104    Adelie    Biscoe           37.8          20.0               190
+## 105    Adelie    Biscoe           37.9          18.6               193
+## 106    Adelie    Biscoe           39.7          18.9               184
+## 107    Adelie    Biscoe           38.6          17.2               199
+## 108    Adelie    Biscoe           38.2          20.0               190
+## 109    Adelie    Biscoe           38.1          17.0               181
+## 110    Adelie    Biscoe           43.2          19.0               197
+## 111    Adelie    Biscoe           38.1          16.5               198
+## 112    Adelie    Biscoe           45.6          20.3               191
+## 113    Adelie    Biscoe           39.7          17.7               193
+## 114    Adelie    Biscoe           42.2          19.5               197
+## 115    Adelie    Biscoe           39.6          20.7               191
+## 116    Adelie    Biscoe           42.7          18.3               196
+## 117    Adelie Torgersen           38.6          17.0               188
+## 118    Adelie Torgersen           37.3          20.5               199
+## 119    Adelie Torgersen           35.7          17.0               189
+## 120    Adelie Torgersen           41.1          18.6               189
+## 121    Adelie Torgersen           36.2          17.2               187
+## 122    Adelie Torgersen           37.7          19.8               198
+## 123    Adelie Torgersen           40.2          17.0               176
+## 124    Adelie Torgersen           41.4          18.5               202
+## 125    Adelie Torgersen           35.2          15.9               186
+## 126    Adelie Torgersen           40.6          19.0               199
+## 127    Adelie Torgersen           38.8          17.6               191
+## 128    Adelie Torgersen           41.5          18.3               195
+## 129    Adelie Torgersen           39.0          17.1               191
+## 130    Adelie Torgersen           44.1          18.0               210
+## 131    Adelie Torgersen           38.5          17.9               190
+## 132    Adelie Torgersen           43.1          19.2               197
+## 133    Adelie     Dream           36.8          18.5               193
+## 134    Adelie     Dream           37.5          18.5               199
+## 135    Adelie     Dream           38.1          17.6               187
+## 136    Adelie     Dream           41.1          17.5               190
+## 137    Adelie     Dream           35.6          17.5               191
+## 138    Adelie     Dream           40.2          20.1               200
+## 139    Adelie     Dream           37.0          16.5               185
+## 140    Adelie     Dream           39.7          17.9               193
+## 141    Adelie     Dream           40.2          17.1               193
+## 142    Adelie     Dream           40.6          17.2               187
+## 143    Adelie     Dream           32.1          15.5               188
+## 144    Adelie     Dream           40.7          17.0               190
+## 145    Adelie     Dream           37.3          16.8               192
+## 146    Adelie     Dream           39.0          18.7               185
+## 147    Adelie     Dream           39.2          18.6               190
+## 148    Adelie     Dream           36.6          18.4               184
+## 149    Adelie     Dream           36.0          17.8               195
+## 150    Adelie     Dream           37.8          18.1               193
+## 151    Adelie     Dream           36.0          17.1               187
+## 152    Adelie     Dream           41.5          18.5               201
+## 153    Gentoo    Biscoe           46.1          13.2               211
+## 154    Gentoo    Biscoe           50.0          16.3               230
+## 155    Gentoo    Biscoe           48.7          14.1               210
+## 156    Gentoo    Biscoe           50.0          15.2               218
+## 157    Gentoo    Biscoe           47.6          14.5               215
+## 158    Gentoo    Biscoe           46.5          13.5               210
+## 159    Gentoo    Biscoe           45.4          14.6               211
+## 160    Gentoo    Biscoe           46.7          15.3               219
+## 161    Gentoo    Biscoe           43.3          13.4               209
+## 162    Gentoo    Biscoe           46.8          15.4               215
+## 163    Gentoo    Biscoe           40.9          13.7               214
+## 164    Gentoo    Biscoe           49.0          16.1               216
+## 165    Gentoo    Biscoe           45.5          13.7               214
+## 166    Gentoo    Biscoe           48.4          14.6               213
+## 167    Gentoo    Biscoe           45.8          14.6               210
+## 168    Gentoo    Biscoe           49.3          15.7               217
+## 169    Gentoo    Biscoe           42.0          13.5               210
+## 170    Gentoo    Biscoe           49.2          15.2               221
+## 171    Gentoo    Biscoe           46.2          14.5               209
+## 172    Gentoo    Biscoe           48.7          15.1               222
+## 173    Gentoo    Biscoe           50.2          14.3               218
+## 174    Gentoo    Biscoe           45.1          14.5               215
+## 175    Gentoo    Biscoe           46.5          14.5               213
+## 176    Gentoo    Biscoe           46.3          15.8               215
+## 177    Gentoo    Biscoe           42.9          13.1               215
+## 178    Gentoo    Biscoe           46.1          15.1               215
+## 179    Gentoo    Biscoe           44.5          14.3               216
+## 180    Gentoo    Biscoe           47.8          15.0               215
+## 181    Gentoo    Biscoe           48.2          14.3               210
+## 182    Gentoo    Biscoe           50.0          15.3               220
+## 183    Gentoo    Biscoe           47.3          15.3               222
+## 184    Gentoo    Biscoe           42.8          14.2               209
+## 185    Gentoo    Biscoe           45.1          14.5               207
+## 186    Gentoo    Biscoe           59.6          17.0               230
+## 187    Gentoo    Biscoe           49.1          14.8               220
+## 188    Gentoo    Biscoe           48.4          16.3               220
+## 189    Gentoo    Biscoe           42.6          13.7               213
+## 190    Gentoo    Biscoe           44.4          17.3               219
+## 191    Gentoo    Biscoe           44.0          13.6               208
+## 192    Gentoo    Biscoe           48.7          15.7               208
+## 193    Gentoo    Biscoe           42.7          13.7               208
+## 194    Gentoo    Biscoe           49.6          16.0               225
+## 195    Gentoo    Biscoe           45.3          13.7               210
+## 196    Gentoo    Biscoe           49.6          15.0               216
+## 197    Gentoo    Biscoe           50.5          15.9               222
+## 198    Gentoo    Biscoe           43.6          13.9               217
+## 199    Gentoo    Biscoe           45.5          13.9               210
+## 200    Gentoo    Biscoe           50.5          15.9               225
+## 201    Gentoo    Biscoe           44.9          13.3               213
+## 202    Gentoo    Biscoe           45.2          15.8               215
+## 203    Gentoo    Biscoe           46.6          14.2               210
+## 204    Gentoo    Biscoe           48.5          14.1               220
+## 205    Gentoo    Biscoe           45.1          14.4               210
+## 206    Gentoo    Biscoe           50.1          15.0               225
+## 207    Gentoo    Biscoe           46.5          14.4               217
+## 208    Gentoo    Biscoe           45.0          15.4               220
+## 209    Gentoo    Biscoe           43.8          13.9               208
+## 210    Gentoo    Biscoe           45.5          15.0               220
+## 211    Gentoo    Biscoe           43.2          14.5               208
+## 212    Gentoo    Biscoe           50.4          15.3               224
+## 213    Gentoo    Biscoe           45.3          13.8               208
+## 214    Gentoo    Biscoe           46.2          14.9               221
+## 215    Gentoo    Biscoe           45.7          13.9               214
+## 216    Gentoo    Biscoe           54.3          15.7               231
+## 217    Gentoo    Biscoe           45.8          14.2               219
+## 218    Gentoo    Biscoe           49.8          16.8               230
+## 219    Gentoo    Biscoe           46.2          14.4               214
+## 220    Gentoo    Biscoe           49.5          16.2               229
+## 221    Gentoo    Biscoe           43.5          14.2               220
+## 222    Gentoo    Biscoe           50.7          15.0               223
+## 223    Gentoo    Biscoe           47.7          15.0               216
+## 224    Gentoo    Biscoe           46.4          15.6               221
+## 225    Gentoo    Biscoe           48.2          15.6               221
+## 226    Gentoo    Biscoe           46.5          14.8               217
+## 227    Gentoo    Biscoe           46.4          15.0               216
+## 228    Gentoo    Biscoe           48.6          16.0               230
+## 229    Gentoo    Biscoe           47.5          14.2               209
+## 230    Gentoo    Biscoe           51.1          16.3               220
+## 231    Gentoo    Biscoe           45.2          13.8               215
+## 232    Gentoo    Biscoe           45.2          16.4               223
+## 233    Gentoo    Biscoe           49.1          14.5               212
+## 234    Gentoo    Biscoe           52.5          15.6               221
+## 235    Gentoo    Biscoe           47.4          14.6               212
+## 236    Gentoo    Biscoe           50.0          15.9               224
+## 237    Gentoo    Biscoe           44.9          13.8               212
+## 238    Gentoo    Biscoe           50.8          17.3               228
+## 239    Gentoo    Biscoe           43.4          14.4               218
+## 240    Gentoo    Biscoe           51.3          14.2               218
+## 241    Gentoo    Biscoe           47.5          14.0               212
+## 242    Gentoo    Biscoe           52.1          17.0               230
+## 243    Gentoo    Biscoe           47.5          15.0               218
+## 244    Gentoo    Biscoe           52.2          17.1               228
+## 245    Gentoo    Biscoe           45.5          14.5               212
+## 246    Gentoo    Biscoe           49.5          16.1               224
+## 247    Gentoo    Biscoe           44.5          14.7               214
+## 248    Gentoo    Biscoe           50.8          15.7               226
+## 249    Gentoo    Biscoe           49.4          15.8               216
+## 250    Gentoo    Biscoe           46.9          14.6               222
+## 251    Gentoo    Biscoe           48.4          14.4               203
+## 252    Gentoo    Biscoe           51.1          16.5               225
+## 253    Gentoo    Biscoe           48.5          15.0               219
+## 254    Gentoo    Biscoe           55.9          17.0               228
+## 255    Gentoo    Biscoe           47.2          15.5               215
+## 256    Gentoo    Biscoe           49.1          15.0               228
+## 257    Gentoo    Biscoe           47.3          13.8               216
+## 258    Gentoo    Biscoe           46.8          16.1               215
+## 259    Gentoo    Biscoe           41.7          14.7               210
+## 260    Gentoo    Biscoe           53.4          15.8               219
+## 261    Gentoo    Biscoe           43.3          14.0               208
+## 262    Gentoo    Biscoe           48.1          15.1               209
+## 263    Gentoo    Biscoe           50.5          15.2               216
+## 264    Gentoo    Biscoe           49.8          15.9               229
+## 265    Gentoo    Biscoe           43.5          15.2               213
+## 266    Gentoo    Biscoe           51.5          16.3               230
+## 267    Gentoo    Biscoe           46.2          14.1               217
+## 268    Gentoo    Biscoe           55.1          16.0               230
+## 269    Gentoo    Biscoe           44.5          15.7               217
+## 270    Gentoo    Biscoe           48.8          16.2               222
+## 271    Gentoo    Biscoe           47.2          13.7               214
+## 272    Gentoo    Biscoe             NA            NA                NA
+## 273    Gentoo    Biscoe           46.8          14.3               215
+## 274    Gentoo    Biscoe           50.4          15.7               222
+## 275    Gentoo    Biscoe           45.2          14.8               212
+## 276    Gentoo    Biscoe           49.9          16.1               213
+## 277 Chinstrap     Dream           46.5          17.9               192
+## 278 Chinstrap     Dream           50.0          19.5               196
+## 279 Chinstrap     Dream           51.3          19.2               193
+## 280 Chinstrap     Dream           45.4          18.7               188
+## 281 Chinstrap     Dream           52.7          19.8               197
+## 282 Chinstrap     Dream           45.2          17.8               198
+## 283 Chinstrap     Dream           46.1          18.2               178
+## 284 Chinstrap     Dream           51.3          18.2               197
+## 285 Chinstrap     Dream           46.0          18.9               195
+## 286 Chinstrap     Dream           51.3          19.9               198
+## 287 Chinstrap     Dream           46.6          17.8               193
+## 288 Chinstrap     Dream           51.7          20.3               194
+## 289 Chinstrap     Dream           47.0          17.3               185
+## 290 Chinstrap     Dream           52.0          18.1               201
+## 291 Chinstrap     Dream           45.9          17.1               190
+## 292 Chinstrap     Dream           50.5          19.6               201
+## 293 Chinstrap     Dream           50.3          20.0               197
+## 294 Chinstrap     Dream           58.0          17.8               181
+## 295 Chinstrap     Dream           46.4          18.6               190
+## 296 Chinstrap     Dream           49.2          18.2               195
+## 297 Chinstrap     Dream           42.4          17.3               181
+## 298 Chinstrap     Dream           48.5          17.5               191
+## 299 Chinstrap     Dream           43.2          16.6               187
+## 300 Chinstrap     Dream           50.6          19.4               193
+## 301 Chinstrap     Dream           46.7          17.9               195
+## 302 Chinstrap     Dream           52.0          19.0               197
+## 303 Chinstrap     Dream           50.5          18.4               200
+## 304 Chinstrap     Dream           49.5          19.0               200
+## 305 Chinstrap     Dream           46.4          17.8               191
+## 306 Chinstrap     Dream           52.8          20.0               205
+## 307 Chinstrap     Dream           40.9          16.6               187
+## 308 Chinstrap     Dream           54.2          20.8               201
+## 309 Chinstrap     Dream           42.5          16.7               187
+## 310 Chinstrap     Dream           51.0          18.8               203
+## 311 Chinstrap     Dream           49.7          18.6               195
+## 312 Chinstrap     Dream           47.5          16.8               199
+## 313 Chinstrap     Dream           47.6          18.3               195
+## 314 Chinstrap     Dream           52.0          20.7               210
+## 315 Chinstrap     Dream           46.9          16.6               192
+## 316 Chinstrap     Dream           53.5          19.9               205
+## 317 Chinstrap     Dream           49.0          19.5               210
+## 318 Chinstrap     Dream           46.2          17.5               187
+## 319 Chinstrap     Dream           50.9          19.1               196
+## 320 Chinstrap     Dream           45.5          17.0               196
+## 321 Chinstrap     Dream           50.9          17.9               196
+## 322 Chinstrap     Dream           50.8          18.5               201
+## 323 Chinstrap     Dream           50.1          17.9               190
+## 324 Chinstrap     Dream           49.0          19.6               212
+## 325 Chinstrap     Dream           51.5          18.7               187
+## 326 Chinstrap     Dream           49.8          17.3               198
+## 327 Chinstrap     Dream           48.1          16.4               199
+## 328 Chinstrap     Dream           51.4          19.0               201
+## 329 Chinstrap     Dream           45.7          17.3               193
+## 330 Chinstrap     Dream           50.7          19.7               203
+## 331 Chinstrap     Dream           42.5          17.3               187
+## 332 Chinstrap     Dream           52.2          18.8               197
+## 333 Chinstrap     Dream           45.2          16.6               191
+## 334 Chinstrap     Dream           49.3          19.9               203
+## 335 Chinstrap     Dream           50.2          18.8               202
+## 336 Chinstrap     Dream           45.6          19.4               194
+## 337 Chinstrap     Dream           51.9          19.5               206
+## 338 Chinstrap     Dream           46.8          16.5               189
+## 339 Chinstrap     Dream           45.7          17.0               195
+## 340 Chinstrap     Dream           55.8          19.8               207
+## 341 Chinstrap     Dream           43.5          18.1               202
+## 342 Chinstrap     Dream           49.6          18.2               193
+## 343 Chinstrap     Dream           50.8          19.0               210
+## 344 Chinstrap     Dream           50.2          18.7               198
+##     body_mass_g    sex year
+## 1          3750   male 2007
+## 2          3800 female 2007
+## 3          3250 female 2007
+## 4            NA   &lt;NA&gt; 2007
+## 5          3450 female 2007
+## 6          3650   male 2007
+## 7          3625 female 2007
+## 8          4675   male 2007
+## 9          3475   &lt;NA&gt; 2007
+## 10         4250   &lt;NA&gt; 2007
+## 11         3300   &lt;NA&gt; 2007
+## 12         3700   &lt;NA&gt; 2007
+## 13         3200 female 2007
+## 14         3800   male 2007
+## 15         4400   male 2007
+## 16         3700 female 2007
+## 17         3450 female 2007
+## 18         4500   male 2007
+## 19         3325 female 2007
+## 20         4200   male 2007
+## 21         3400 female 2007
+## 22         3600   male 2007
+## 23         3800 female 2007
+## 24         3950   male 2007
+## 25         3800   male 2007
+## 26         3800 female 2007
+## 27         3550   male 2007
+## 28         3200 female 2007
+## 29         3150 female 2007
+## 30         3950   male 2007
+## 31         3250 female 2007
+## 32         3900   male 2007
+## 33         3300 female 2007
+## 34         3900   male 2007
+## 35         3325 female 2007
+## 36         4150   male 2007
+## 37         3950   male 2007
+## 38         3550 female 2007
+## 39         3300 female 2007
+## 40         4650   male 2007
+## 41         3150 female 2007
+## 42         3900   male 2007
+## 43         3100 female 2007
+## 44         4400   male 2007
+## 45         3000 female 2007
+## 46         4600   male 2007
+## 47         3425   male 2007
+## 48         2975   &lt;NA&gt; 2007
+## 49         3450 female 2007
+## 50         4150   male 2007
+## 51         3500 female 2008
+## 52         4300   male 2008
+## 53         3450 female 2008
+## 54         4050   male 2008
+## 55         2900 female 2008
+## 56         3700   male 2008
+## 57         3550 female 2008
+## 58         3800   male 2008
+## 59         2850 female 2008
+## 60         3750   male 2008
+## 61         3150 female 2008
+## 62         4400   male 2008
+## 63         3600 female 2008
+## 64         4050   male 2008
+## 65         2850 female 2008
+## 66         3950   male 2008
+## 67         3350 female 2008
+## 68         4100   male 2008
+## 69         3050 female 2008
+## 70         4450   male 2008
+## 71         3600 female 2008
+## 72         3900   male 2008
+## 73         3550 female 2008
+## 74         4150   male 2008
+## 75         3700 female 2008
+## 76         4250   male 2008
+## 77         3700 female 2008
+## 78         3900   male 2008
+## 79         3550 female 2008
+## 80         4000   male 2008
+## 81         3200 female 2008
+## 82         4700   male 2008
+## 83         3800 female 2008
+## 84         4200   male 2008
+## 85         3350 female 2008
+## 86         3550   male 2008
+## 87         3800   male 2008
+## 88         3500 female 2008
+## 89         3950   male 2008
+## 90         3600 female 2008
+## 91         3550 female 2008
+## 92         4300   male 2008
+## 93         3400 female 2008
+## 94         4450   male 2008
+## 95         3300 female 2008
+## 96         4300   male 2008
+## 97         3700 female 2008
+## 98         4350   male 2008
+## 99         2900 female 2008
+## 100        4100   male 2008
+## 101        3725 female 2009
+## 102        4725   male 2009
+## 103        3075 female 2009
+## 104        4250   male 2009
+## 105        2925 female 2009
+## 106        3550   male 2009
+## 107        3750 female 2009
+## 108        3900   male 2009
+## 109        3175 female 2009
+## 110        4775   male 2009
+## 111        3825 female 2009
+## 112        4600   male 2009
+## 113        3200 female 2009
+## 114        4275   male 2009
+## 115        3900 female 2009
+## 116        4075   male 2009
+## 117        2900 female 2009
+## 118        3775   male 2009
+## 119        3350 female 2009
+## 120        3325   male 2009
+## 121        3150 female 2009
+## 122        3500   male 2009
+## 123        3450 female 2009
+## 124        3875   male 2009
+## 125        3050 female 2009
+## 126        4000   male 2009
+## 127        3275 female 2009
+## 128        4300   male 2009
+## 129        3050 female 2009
+## 130        4000   male 2009
+## 131        3325 female 2009
+## 132        3500   male 2009
+## 133        3500 female 2009
+## 134        4475   male 2009
+## 135        3425 female 2009
+## 136        3900   male 2009
+## 137        3175 female 2009
+## 138        3975   male 2009
+## 139        3400 female 2009
+## 140        4250   male 2009
+## 141        3400 female 2009
+## 142        3475   male 2009
+## 143        3050 female 2009
+## 144        3725   male 2009
+## 145        3000 female 2009
+## 146        3650   male 2009
+## 147        4250   male 2009
+## 148        3475 female 2009
+## 149        3450 female 2009
+## 150        3750   male 2009
+## 151        3700 female 2009
+## 152        4000   male 2009
+## 153        4500 female 2007
+## 154        5700   male 2007
+## 155        4450 female 2007
+## 156        5700   male 2007
+## 157        5400   male 2007
+## 158        4550 female 2007
+## 159        4800 female 2007
+## 160        5200   male 2007
+## 161        4400 female 2007
+## 162        5150   male 2007
+## 163        4650 female 2007
+## 164        5550   male 2007
+## 165        4650 female 2007
+## 166        5850   male 2007
+## 167        4200 female 2007
+## 168        5850   male 2007
+## 169        4150 female 2007
+## 170        6300   male 2007
+## 171        4800 female 2007
+## 172        5350   male 2007
+## 173        5700   male 2007
+## 174        5000 female 2007
+## 175        4400 female 2007
+## 176        5050   male 2007
+## 177        5000 female 2007
+## 178        5100   male 2007
+## 179        4100   &lt;NA&gt; 2007
+## 180        5650   male 2007
+## 181        4600 female 2007
+## 182        5550   male 2007
+## 183        5250   male 2007
+## 184        4700 female 2007
+## 185        5050 female 2007
+## 186        6050   male 2007
+## 187        5150 female 2008
+## 188        5400   male 2008
+## 189        4950 female 2008
+## 190        5250   male 2008
+## 191        4350 female 2008
+## 192        5350   male 2008
+## 193        3950 female 2008
+## 194        5700   male 2008
+## 195        4300 female 2008
+## 196        4750   male 2008
+## 197        5550   male 2008
+## 198        4900 female 2008
+## 199        4200 female 2008
+## 200        5400   male 2008
+## 201        5100 female 2008
+## 202        5300   male 2008
+## 203        4850 female 2008
+## 204        5300   male 2008
+## 205        4400 female 2008
+## 206        5000   male 2008
+## 207        4900 female 2008
+## 208        5050   male 2008
+## 209        4300 female 2008
+## 210        5000   male 2008
+## 211        4450 female 2008
+## 212        5550   male 2008
+## 213        4200 female 2008
+## 214        5300   male 2008
+## 215        4400 female 2008
+## 216        5650   male 2008
+## 217        4700 female 2008
+## 218        5700   male 2008
+## 219        4650   &lt;NA&gt; 2008
+## 220        5800   male 2008
+## 221        4700 female 2008
+## 222        5550   male 2008
+## 223        4750 female 2008
+## 224        5000   male 2008
+## 225        5100   male 2008
+## 226        5200 female 2008
+## 227        4700 female 2008
+## 228        5800   male 2008
+## 229        4600 female 2008
+## 230        6000   male 2008
+## 231        4750 female 2008
+## 232        5950   male 2008
+## 233        4625 female 2009
+## 234        5450   male 2009
+## 235        4725 female 2009
+## 236        5350   male 2009
+## 237        4750 female 2009
+## 238        5600   male 2009
+## 239        4600 female 2009
+## 240        5300   male 2009
+## 241        4875 female 2009
+## 242        5550   male 2009
+## 243        4950 female 2009
+## 244        5400   male 2009
+## 245        4750 female 2009
+## 246        5650   male 2009
+## 247        4850 female 2009
+## 248        5200   male 2009
+## 249        4925   male 2009
+## 250        4875 female 2009
+## 251        4625 female 2009
+## 252        5250   male 2009
+## 253        4850 female 2009
+## 254        5600   male 2009
+## 255        4975 female 2009
+## 256        5500   male 2009
+## 257        4725   &lt;NA&gt; 2009
+## 258        5500   male 2009
+## 259        4700 female 2009
+## 260        5500   male 2009
+## 261        4575 female 2009
+## 262        5500   male 2009
+## 263        5000 female 2009
+## 264        5950   male 2009
+## 265        4650 female 2009
+## 266        5500   male 2009
+## 267        4375 female 2009
+## 268        5850   male 2009
+## 269        4875   &lt;NA&gt; 2009
+## 270        6000   male 2009
+## 271        4925 female 2009
+## 272          NA   &lt;NA&gt; 2009
+## 273        4850 female 2009
+## 274        5750   male 2009
+## 275        5200 female 2009
+## 276        5400   male 2009
+## 277        3500 female 2007
+## 278        3900   male 2007
+## 279        3650   male 2007
+## 280        3525 female 2007
+## 281        3725   male 2007
+## 282        3950 female 2007
+## 283        3250 female 2007
+## 284        3750   male 2007
+## 285        4150 female 2007
+## 286        3700   male 2007
+## 287        3800 female 2007
+## 288        3775   male 2007
+## 289        3700 female 2007
+## 290        4050   male 2007
+## 291        3575 female 2007
+## 292        4050   male 2007
+## 293        3300   male 2007
+## 294        3700 female 2007
+## 295        3450 female 2007
+## 296        4400   male 2007
+## 297        3600 female 2007
+## 298        3400   male 2007
+## 299        2900 female 2007
+## 300        3800   male 2007
+## 301        3300 female 2007
+## 302        4150   male 2007
+## 303        3400 female 2008
+## 304        3800   male 2008
+## 305        3700 female 2008
+## 306        4550   male 2008
+## 307        3200 female 2008
+## 308        4300   male 2008
+## 309        3350 female 2008
+## 310        4100   male 2008
+## 311        3600   male 2008
+## 312        3900 female 2008
+## 313        3850 female 2008
+## 314        4800   male 2008
+## 315        2700 female 2008
+## 316        4500   male 2008
+## 317        3950   male 2008
+## 318        3650 female 2008
+## 319        3550   male 2008
+## 320        3500 female 2008
+## 321        3675 female 2009
+## 322        4450   male 2009
+## 323        3400 female 2009
+## 324        4300   male 2009
+## 325        3250   male 2009
+## 326        3675 female 2009
+## 327        3325 female 2009
+## 328        3950   male 2009
+## 329        3600 female 2009
+## 330        4050   male 2009
+## 331        3350 female 2009
+## 332        3450   male 2009
+## 333        3250 female 2009
+## 334        4050   male 2009
+## 335        3800   male 2009
+## 336        3525 female 2009
+## 337        3950   male 2009
+## 338        3650 female 2009
+## 339        3650 female 2009
+## 340        4000   male 2009
+## 341        3400 female 2009
+## 342        3775   male 2009
+## 343        4100   male 2009
+## 344        3775 female 2009
+```
+
+
+---
+
+# Introducing dbplyr
+
+
+```r
+con &lt;- dbConnect(duckdb(), dbdir='chapter3_db')
+
+# add some data to it
+dbWriteTable(con, "penguins", palmerpenguins::penguins, overwrite=TRUE)
+dbWriteTable(con, "penguins_raw", palmerpenguins::penguins_raw, overwrite=TRUE)
+dbWriteTable(con, "diamonds", ggplot2::diamonds, overwrite=TRUE)
+```
+
+penguins_db &lt;- tbl(con, 'penguins')
+penguins_db
+```
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
